@@ -18,6 +18,7 @@ fmulti(0)
   fCalGeoMean  =new Double_t[num_bars];
   fMatchedLeft =new Double_t[num_bars];
   fMatchedRight=new Double_t[num_bars];
+  fMatchedGeoMean=new Double_t[num_bars];
   fTheta       =new Double_t[num_bars];
   fPhi         =new Double_t[num_bars];
   fThetaRan    =new Double_t[num_bars];
@@ -46,6 +47,7 @@ fmulti(0)
   fCalGeoMean  =new Double_t[25];
   fMatchedLeft =new Double_t[25];
   fMatchedRight=new Double_t[25];
+  fMatchedGeoMean=new Double_t[25];
   fTheta       =new Double_t[25];
   fPhi         =new Double_t[25];
   fThetaRan    =new Double_t[25];
@@ -73,6 +75,7 @@ NeutronWallCalibratedData::~NeutronWallCalibratedData()
   delete [] fCalGeoMean  ;
   delete [] fMatchedLeft ;
   delete [] fMatchedRight;
+  delete [] fMatchedGeoMean;
   delete [] fTheta       ;
   delete [] fPhi         ;
   delete [] fThetaRan    ;

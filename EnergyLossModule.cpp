@@ -123,8 +123,8 @@ int EnergyLossModule::LoadRangeFile(const char * file_name)
 //______________________________________________
 double EnergyLossModule::GetEnergyLoss(int Z, int A, double Einc, const char * material, double thickness_um, int model)
 {
-  double Precision=0.00001;
-  double dThicknessMin=thickness_um*1E-4;
+  double Precision=0.0001;
+  double dThicknessMin=thickness_um*1E-3;
   double IntegrateThickness=0;
   double dThickness=dThicknessMin;
   double Eresidual=Einc;

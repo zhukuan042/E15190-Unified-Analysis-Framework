@@ -24,22 +24,38 @@ int main (int argc, char ** argv)
     std::string last_run_name(argv[2]);
     last_run = atoi(last_run_name.c_str());
   }
-  // Adding all the files to the TChain ================================
-  for(int i=first_run; i<=last_run; i++)
+  // Run by Run loop ////////////////////////
+  for(int cur_run=first_run; cur_run<=last_run; cur_run++)
   {
     char file_evt[100];
-    sprintf (file_evt,"run-%04d*.root",i);
+    sprintf (file_evt,"run-%04d*.root",cur_run);
     std::string file_evt_string(file_evt);
     std::string path_to_evt_file(data_path+file_evt_string);
     int n_files = dataChain->Add((data_path+file_evt).c_str());
-    printf("%d Root files added to chain for run %d\n", n_files, i);
+    printf("%d Root files added to chain for run %d\n", n_files, cur_run);
+
+
+    //Building framework /////////////////
+
+    E15190Reader E15190Analyzer(dataChain);
+
+
+    //Loading calibration files //////////
+
+
+    //Definition of the output file //////
+
+    std::string FileOutName(Form("output/output_%04d.root", cur_run));
+
+
+    //Run the required method(s) /////////
+
+    E15190Analyzer.Loop(FileOutName.c_str(), evt_amount);
+
   }
+  // End of the main loop //////////////////
 
-  E15190Reader E15190Analyzer(dataChain);
-
-  std::string FileOutName(Form("output/output_%04d_%04d.root", first_run, last_run));
-
-  E15190Analyzer.Loop(FileOutName.c_str(), evt_amount);
+  printf("\nData Analyzed, Bye!\n");
 
   return 0;
 }

@@ -152,6 +152,7 @@ E15190Reader::~E15190Reader()
 int E15190Reader::LoadNWPositionCalibration(const char * file_name, const char * WallToCalibrate)
 {
   if(strcmp(WallToCalibrate,"NWA")==0) {
+    if(!fIsNWA) return 0;
     int NLines=fNWAPositionCalibration->LoadCalibration(file_name);
     if(NLines>0) {
       fNWAPositionCalibrated=true;
@@ -161,6 +162,7 @@ int E15190Reader::LoadNWPositionCalibration(const char * file_name, const char *
     fNWAPositionCalibrated=false;
   }
   if(strcmp(WallToCalibrate,"NWB")==0) {
+    if(!fIsNWB) return 0;
     int NLines=fNWBPositionCalibration->LoadCalibration(file_name);
     if(NLines>0) {
       fNWBPositionCalibrated=true;
@@ -178,6 +180,7 @@ int E15190Reader::LoadNWPositionCalibration(const char * file_name, const char *
 int E15190Reader::LoadNWCosmicRayPosition(const char * file_name, const char * WallToCalibrate)
 {
   if(strcmp(WallToCalibrate,"NWA")==0) {
+    if(!fIsNWA) return 0;
     int NLines=fNWACosmicRayInfo->LoadPeakPositions(file_name);
     if(NLines>0) {
       fNWACosmicRayPositionLoaded=true;
@@ -187,6 +190,7 @@ int E15190Reader::LoadNWCosmicRayPosition(const char * file_name, const char * W
     fNWACosmicRayPositionLoaded=false;
   }
   if(strcmp(WallToCalibrate,"NWB")==0) {
+    if(!fIsNWB) return 0;
     int NLines=fNWBCosmicRayInfo->LoadPeakPositions(file_name);
     if(NLines>0) {
       fNWBCosmicRayPositionLoaded=true;
@@ -204,6 +208,7 @@ int E15190Reader::LoadNWCosmicRayPosition(const char * file_name, const char * W
 int E15190Reader::LoadNWTimeCalibration(const char * file_name, const char * WallToCalibrate)
 {
   if(strcmp(WallToCalibrate,"NWA")==0) {
+    if(!fIsNWA) return 0;
     int NLines=fNWATimeCalibration->LoadCalibration(file_name);
     if(NLines>0) {
       fNWATimeCalibrated=true;
@@ -213,6 +218,7 @@ int E15190Reader::LoadNWTimeCalibration(const char * file_name, const char * Wal
     fNWATimeCalibrated=false;
   }
   if(strcmp(WallToCalibrate,"NWB")==0) {
+    if(!fIsNWB) return 0;
     int NLines=fNWBTimeCalibration->LoadCalibration(file_name);
     if(NLines>0) {
       fNWBTimeCalibrated=true;
@@ -230,6 +236,7 @@ int E15190Reader::LoadNWTimeCalibration(const char * file_name, const char * Wal
 int E15190Reader::LoadNWGeometryFiducialPoints(const char * file_name, const char * WallToCalibrate)
 {
   if(strcmp(WallToCalibrate,"NWA")==0) {
+    if(!fIsNWA) return 0;
     int NLines=fNWAGeometry->LoadFiducialPoints(file_name);
     if(NLines>0) {
       fNWAGeometryCalibrated=true;
@@ -239,6 +246,7 @@ int E15190Reader::LoadNWGeometryFiducialPoints(const char * file_name, const cha
     fNWAGeometryCalibrated=false;
   }
   if(strcmp(WallToCalibrate,"NWB")==0) {
+    if(!fIsNWB) return 0;
     int NLines=fNWBGeometry->LoadFiducialPoints(file_name);
     if(NLines>0) {
       fNWBGeometryCalibrated=true;
@@ -256,6 +264,7 @@ int E15190Reader::LoadNWGeometryFiducialPoints(const char * file_name, const cha
 int E15190Reader::LoadNWPulseHeightMatching(const char * file_name, const char * WallToCalibrate)
 {
   if(strcmp(WallToCalibrate,"NWA")==0) {
+    if(!fIsNWA) return 0;
     int NLines=fNWAPulseHeightCalibrationTools->LoadMatching(file_name);
     if(NLines>0) {
       fNWAPulseHeightMatched=true;
@@ -265,6 +274,7 @@ int E15190Reader::LoadNWPulseHeightMatching(const char * file_name, const char *
     fNWAPulseHeightMatched=false;
   }
   if(strcmp(WallToCalibrate,"NWB")==0) {
+    if(!fIsNWB) return 0;
     int NLines=fNWBPulseHeightCalibrationTools->LoadMatching(file_name);
     if(NLines>0) {
       fNWBPulseHeightMatched=true;
@@ -281,6 +291,7 @@ int E15190Reader::LoadNWPulseHeightMatching(const char * file_name, const char *
 //____________________________________________________
 int E15190Reader::LoadFATimeCalibration(const char * file_name)
 {
+  if(!fIsFA) return 0;
   int NLines=fFATimeCalibration->LoadCalibration(file_name);
   if(NLines>0) {
     fFATimeCalibrated=true;
@@ -296,6 +307,7 @@ int E15190Reader::LoadFATimeCalibration(const char * file_name)
 //____________________________________________________
 int E15190Reader::LoadFATimePulseHeightCorrection(const char * file_name)
 {
+  if(!fIsFA) return 0;
   int NLines=fFATimeCalibration->LoadPulseHeightCorrection(file_name);
   if(NLines>0) {
     fFATimeCalibrated=true;
@@ -435,6 +447,30 @@ double E15190Reader::GetNWBDistanceRan(int num_bar, double Xcm) const
 }
 
 //____________________________________________________
+double E15190Reader::GetNWALeftMatched(double ch, int num_bar) const
+{
+  return fNWAPulseHeightMatched ? fNWAPulseHeightCalibrationTools->GetLeftMatched(ch, num_bar) : -9999;
+}
+
+//____________________________________________________
+double E15190Reader::GetNWARightMatched(double ch, int num_bar) const
+{
+  return fNWAPulseHeightMatched ? fNWAPulseHeightCalibrationTools->GetRightMatched(ch, num_bar) : -9999;
+}
+
+//____________________________________________________
+double E15190Reader::GetNWBLeftMatched(double ch, int num_bar) const
+{
+  return fNWBPulseHeightMatched ? fNWBPulseHeightCalibrationTools->GetLeftMatched(ch, num_bar) : -9999;
+}
+
+//____________________________________________________
+double E15190Reader::GetNWBRightMatched(double ch, int num_bar) const
+{
+  return fNWBPulseHeightMatched ? fNWBPulseHeightCalibrationTools->GetRightMatched(ch, num_bar) : -9999;
+}
+
+//____________________________________________________
 double E15190Reader::GetFATimePulseHeightCorrection(int num_det, double pulse_height) const
 {
   return fFATimeCalibrated ? fFATimeCalibration->GetTimePulseHeightCorrection(num_det, pulse_height) : 0;
@@ -443,6 +479,7 @@ double E15190Reader::GetFATimePulseHeightCorrection(int num_det, double pulse_he
 //____________________________________________________
 int E15190Reader::LoadMBGeometry(const char * file_name)
 {
+  if(!fIsMB) return 0;
   int NLines=fMicroballGeometry->LoadGeometry(file_name);
   if(NLines>0) {
     fMBGeometryLoaded=true;
@@ -458,6 +495,7 @@ int E15190Reader::LoadMBGeometry(const char * file_name)
 //____________________________________________________
 int E15190Reader::LoadMBDetectorStatus(const char * file_name)
 {
+  if(!fIsMB) return 0;
   int NLines=fMicroballStatus->LoadBadDetectors(file_name);
   if(NLines>0) {
     fMBStatusLoaded=true;
@@ -473,6 +511,7 @@ int E15190Reader::LoadMBDetectorStatus(const char * file_name)
 //____________________________________________________
 int E15190Reader::LoadMBFastSlowHitCondition(const char * file_name)
 {
+  if(!fIsMB) return 0;
   int NLines=fMicroballHitCondition->LoadFastSlowCuts(file_name);
   if(NLines>0) {
     fMBHitConditionLoaded=true;
@@ -488,6 +527,7 @@ int E15190Reader::LoadMBFastSlowHitCondition(const char * file_name)
 //____________________________________________________
 int E15190Reader::LoadMBCentrality(const char * file_name)
 {
+  if(!fIsMB) return 0;
   int NLines=fMicroballCentrality->LoadImpactParameter(file_name);
   if(NLines>0) {
     fMBCentralityLoaded=true;
@@ -551,6 +591,7 @@ bool E15190Reader::IsMBHit (int num_ring, int num_det, double fast, double tail,
 //____________________________________________________
 int E15190Reader::LoadHiRAGeometry(const char * file_name)
 {
+  if(!fIsHiRA) return 0;
   std::ifstream FileIn(file_name);
   if(!FileIn.is_open()) {
     printf("Error: error while opening geometry file\n");
@@ -607,6 +648,7 @@ int E15190Reader::LoadHiRAGeometry(const char * file_name)
 //____________________________________________________
 int E15190Reader::LoadHiRAStripBad(const char * file_name)
 {
+  if(!fIsHiRA) return 0;
   std::ifstream FileIn(file_name);
   if(!FileIn.is_open()) {
     printf("Error: error while opening strip bad file\n");
@@ -647,6 +689,7 @@ int E15190Reader::LoadHiRAStripBad(const char * file_name)
 //____________________________________________________
 int E15190Reader::LoadHiRASiCalibration(const char * file_name)
 {
+  if(!fIsHiRA) return 0;
   int NLines=fSiCalibrationTools->LoadCalibration(file_name);
   if(NLines>0) {
     fHiRASiCalibrated=true;
@@ -662,6 +705,7 @@ int E15190Reader::LoadHiRASiCalibration(const char * file_name)
 //____________________________________________________
 int E15190Reader::LoadHiRACsICalibration(const char * file_name, int Z, int A)
 {
+  if(!fIsHiRA) return 0;
   int NLines=fCsICalibrationModule->LoadEnergyCalibration(file_name, Z, A);
   if(NLines>0) {
     fHiRACsICalibrated=true;
@@ -677,6 +721,7 @@ int E15190Reader::LoadHiRACsICalibration(const char * file_name, int Z, int A)
 //____________________________________________________
 int E15190Reader::LoadHiRASiHiLowMatching(const char * file_name)
 {
+  if(!fIsHiRA) return 0;
   std::ifstream FileIn(file_name);
   if(!FileIn.is_open()) {
     printf("Error: error while opening Si matching file\n");
@@ -832,6 +877,18 @@ double E15190Reader::GetSibEMeV(int ch, int telescope, int numstripb)
 }
 
 //____________________________________________________
+void E15190Reader::PrintPercentage(Long64_t jentry, Long64_t nentries) const
+{
+  std::cout << "  Percentage = " << std::fixed << std::setprecision(1) << std::setw(5) << (100*double(jentry)/nentries) << " %";
+  std::cout << "   [";
+  int printindex=0;
+  for(; printindex<int(100*double(jentry)/nentries); printindex+=5) std::cout << "=";
+  for(; printindex<100; printindex+=5) std::cout << " ";
+  std::cout << "]\r"; std::cout.flush();
+}
+
+
+//____________________________________________________
 void E15190Reader::Loop(const char * file_name, Long64_t evt_amount)
 {
   // this method loops on the first "evt_amount" data entries
@@ -848,7 +905,7 @@ void E15190Reader::Loop(const char * file_name, Long64_t evt_amount)
   for(;fE15190Reader->Next() && jentry<nentries; jentry++)
   {
     if(jentry%100000==0) {
-      printf("Percentage = %.2f %%\n", 100*double(jentry)/nentries);
+      PrintPercentage(jentry,nentries);
     }
 
     if (fIsNWA) {
@@ -903,7 +960,7 @@ void E15190Reader::LoopOnCalibratedData(const char * file_name, Long64_t evt_amo
   for(;fE15190Reader->Next() && jentry<nentries; jentry++)
   {
     if(jentry%100000==0) {
-      printf("Percentage = %.2f %%\n", 100*double(jentry)/nentries);
+      PrintPercentage(jentry,nentries);
     }
 
     if (fIsNWA) {

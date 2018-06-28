@@ -4,6 +4,8 @@
 #include <string.h>
 #include <TTreeReader.h>
 #include <TTreeReaderValue.h>
+#include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -108,8 +110,10 @@ public :
   double GetNWBPhiRan(int num_bar, double Xcm) const;
   double GetNWBDistance(int num_bar, double Xcm) const;
   double GetNWBDistanceRan(int num_bar, double Xcm) const;
-  double GetNWALeftCorrected(double ch, int num_bar, double Xcm) const;
-  double GetNWARightCorrected(double ch, int num_bar, double Xcm) const;
+  double GetNWALeftMatched(double ch, int num_bar) const;
+  double GetNWARightMatched(double ch, int num_bar) const;
+  double GetNWBLeftMatched(double ch, int num_bar) const;
+  double GetNWBRightMatched(double ch, int num_bar) const;
   double GetFATimeOffset(int num_det) const;
   double GetFATimePulseHeightCorrection(int num_det, double pulse_height) const;
   // Microball methods
@@ -244,6 +248,7 @@ private :
   bool   **fStripfBad;
   bool   **fStripbBad;
 
+  void PrintPercentage(Long64_t, Long64_t) const; 
 };
 
 #endif

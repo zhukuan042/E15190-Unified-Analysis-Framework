@@ -1,3 +1,3 @@
 {
-  //gROOT->ProcessLine(".L lib/HTNeutronWallDict.so");
+  gROOT->ProcessLine(".L lib/libE15190Reader.so");
 }
