@@ -18,7 +18,7 @@ Table of contents
   * [Compile the Code](#compile-the-code)
   * [Configure the Program](#configure-the-program)
   * [Limitations](#limitations)
-* [The E15190ReaderFramework](#the-e15190reader-framework)
+* [The E15190Reader Framework](#the-e15190reader-framework)
   * [Run the Code](#run-the-code)
   * [Run the Code on NSCL ember](#run-the-code-on-nscl-ember)
   * [Calibrated Output Data](#calibrated-output-data)
