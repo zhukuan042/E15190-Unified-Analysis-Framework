@@ -120,6 +120,10 @@ void E15190Reader::BuildCalibratedEvent()
     }
     fForwardArrayCalibratedData.fTimeMean/=tgood;
   }
+
+  if(fIsHiRA) {
+    
+  }
 }
 
 //____________________________________________________
@@ -139,11 +143,7 @@ void E15190Reader::BuildCalibratedTree(const char * file_name, Long64_t evt_amou
   if(fIsVW) TreeOut->Branch("VetoWall.","VetoWallCalibratedData",&fVetoWallCalibratedData,32000,2);
   if(fIsFA) TreeOut->Branch("ForwardArray.","ForwardArrayCalibratedData",&fForwardArrayCalibratedData,32000,2);
   if(fIsMB) TreeOut->Branch("uBall.","MicroballCalibratedData",&fMicroballCalibratedData,32000,2);
-  if(fIsHiRA) {
-    for(int i=0; i<NUM_TEL; i++) {
-      //TreeOut->Branch(Form("HiRA.tele%d.",i),"HiRACalibratedData",&fHiRACalibratedData[i],32000,2);
-    }
-  }
+  if(fIsHiRA) TreeOut->Branch("HiRA.","HiRACalibratedData",&fHiRACalibratedData,32000,2);
 
   TreeOut->SetAutoSave(5000000);
 
@@ -190,8 +190,8 @@ void E15190Reader::BuildCosmicRayData(const char * file_name, Long64_t evt_amoun
 
   // Initializing output TTree
   TTree * TreeOut = new TTree ("E15190", "NW Cosmic Ray Tree");
-  if(fIsNWA) TreeOut->Branch("NWA.","NeutronWallCalibratedData",fNWACalibratedData,32000,2);
-  if(fIsNWB) TreeOut->Branch("NWB.","NeutronWallCalibratedData",fNWBCalibratedData,32000,2);
+  if(fIsNWA) TreeOut->Branch("NWA.","NeutronWallCalibratedData",&fNWACalibratedData,32000,2);
+  if(fIsNWB) TreeOut->Branch("NWB.","NeutronWallCalibratedData",&fNWBCalibratedData,32000,2);
   TreeOut->SetAutoSave(5000000);
 
   Long64_t nentries=fChain->GetEntries();
@@ -209,52 +209,52 @@ void E15190Reader::BuildCosmicRayData(const char * file_name, Long64_t evt_amoun
     if(fIsNWA) {
       HTNeutronWallData * NWA = fNWA->Get();
       //Filling calibrated data structures
-      fNWACalibratedData->fmulti=0;
+      fNWACalibratedData.fmulti=0;
       for(int i=0; i<NWA->fmulti; i++)
       {
         if(NWA->fGeoMean[i]>GetNWACosmicStartingPoint(NWA->fnumbar[i])) {
-          fNWACalibratedData->fnumbar[NWACalibrated->fmulti]      =NWA->fnumbar[i];
-          fNWACalibratedData->fLeft[NWACalibrated->fmulti]        =NWA->fLeft[i];
-          fNWACalibratedData->fRight[NWACalibrated->fmulti]       =NWA->fRight[i];
-          fNWACalibratedData->ffastLeft[NWACalibrated->fmulti]    =NWA->ffastLeft[i];
-          fNWACalibratedData->ffastRight[NWACalibrated->fmulti]   =NWA->ffastRight[i];
-          fNWACalibratedData->fTimeLeft[NWACalibrated->fmulti]    =NWA->fTimeLeft[i];
-          fNWACalibratedData->fTimeRight[NWACalibrated->fmulti]   =NWA->fTimeRight[i];
-          fNWACalibratedData->fGeoMean[NWACalibrated->fmulti]     =NWA->fGeoMean[i];
-          fNWACalibratedData->ffastGeoMean[NWACalibrated->fmulti] =NWA->ffastGeoMean[i];
-          fNWACalibratedData->fTimeMean[NWACalibrated->fmulti]    =GetNWATimeMean(NWA->fnumbar[i],NWA->fTimeLeft[i],NWA->fTimeRight[i]);
-          fNWACalibratedData->fCalGeoMean[NWACalibrated->fmulti]  =-9999;
+          fNWACalibratedData.fnumbar[fNWACalibratedData.fmulti]      =NWA->fnumbar[i];
+          fNWACalibratedData.fLeft[fNWACalibratedData.fmulti]        =NWA->fLeft[i];
+          fNWACalibratedData.fRight[fNWACalibratedData.fmulti]       =NWA->fRight[i];
+          fNWACalibratedData.ffastLeft[fNWACalibratedData.fmulti]    =NWA->ffastLeft[i];
+          fNWACalibratedData.ffastRight[fNWACalibratedData.fmulti]   =NWA->ffastRight[i];
+          fNWACalibratedData.fTimeLeft[fNWACalibratedData.fmulti]    =NWA->fTimeLeft[i];
+          fNWACalibratedData.fTimeRight[fNWACalibratedData.fmulti]   =NWA->fTimeRight[i];
+          fNWACalibratedData.fGeoMean[fNWACalibratedData.fmulti]     =NWA->fGeoMean[i];
+          fNWACalibratedData.ffastGeoMean[fNWACalibratedData.fmulti] =NWA->ffastGeoMean[i];
+          fNWACalibratedData.fTimeMean[fNWACalibratedData.fmulti]    =GetNWATimeMean(NWA->fnumbar[i],NWA->fTimeLeft[i],NWA->fTimeRight[i]);
+          fNWACalibratedData.fCalGeoMean[fNWACalibratedData.fmulti]  =-9999;
           fNWACalibratedData.fMatchedLeft[fNWACalibratedData.fmulti] =GetNWALeftMatched(NWA->fLeft[i], NWA->fnumbar[i]);
           fNWACalibratedData.fMatchedRight[fNWACalibratedData.fmulti]=GetNWARightMatched(NWA->fRight[i], NWA->fnumbar[i]);
           fNWACalibratedData.fMatchedGeoMean[fNWACalibratedData.fmulti]=sqrt(fNWACalibratedData.fMatchedLeft[fNWACalibratedData.fmulti]*fNWACalibratedData.fMatchedRight[fNWACalibratedData.fmulti]);
-          fNWACalibratedData->fXcm[NWACalibrated->fmulti]         =GetNWAXcm(NWA->fnumbar[i],NWA->fTimeLeft[i],NWA->fTimeRight[i]);
-          fNWACalibratedData->fmulti++;
+          fNWACalibratedData.fXcm[fNWACalibratedData.fmulti]         =GetNWAXcm(NWA->fnumbar[i],NWA->fTimeLeft[i],NWA->fTimeRight[i]);
+          fNWACalibratedData.fmulti++;
         }
       }
     }
 
     if(fIsNWB) {
       HTNeutronWallData * NWB = fNWB->Get();
-      fNWBCalibratedData->fmulti=0;
+      fNWBCalibratedData.fmulti=0;
       for(int i=0; i<NWB->fmulti; i++)
       {
         if(NWB->fGeoMean[i]>GetNWBCosmicStartingPoint(NWB->fnumbar[i])) {
-          fNWBCalibratedData->fnumbar[NWBCalibrated->fmulti]      =NWB->fnumbar[i];
-          fNWBCalibratedData->fLeft[NWBCalibrated->fmulti]        =NWB->fLeft[i];
-          fNWBCalibratedData->fRight[NWBCalibrated->fmulti]       =NWB->fRight[i];
-          fNWBCalibratedData->ffastLeft[NWBCalibrated->fmulti]    =NWB->ffastLeft[i];
-          fNWBCalibratedData->ffastRight[NWBCalibrated->fmulti]   =NWB->ffastRight[i];
-          fNWBCalibratedData->fTimeLeft[NWBCalibrated->fmulti]    =NWB->fTimeLeft[i];
-          fNWBCalibratedData->fTimeRight[NWBCalibrated->fmulti]   =NWB->fTimeRight[i];
-          fNWBCalibratedData->fGeoMean[NWBCalibrated->fmulti]     =NWB->fGeoMean[i];
-          fNWBCalibratedData->ffastGeoMean[NWBCalibrated->fmulti] =NWB->ffastGeoMean[i];
-          fNWBCalibratedData->fTimeMean[NWBCalibrated->fmulti]    =GetNWBTimeMean(NWB->fnumbar[i],NWB->fTimeLeft[i],NWB->fTimeRight[i]);
-          fNWBCalibratedData->fCalGeoMean[NWBCalibrated->fmulti]  =-9999;
+          fNWBCalibratedData.fnumbar[fNWBCalibratedData.fmulti]      =NWB->fnumbar[i];
+          fNWBCalibratedData.fLeft[fNWBCalibratedData.fmulti]        =NWB->fLeft[i];
+          fNWBCalibratedData.fRight[fNWBCalibratedData.fmulti]       =NWB->fRight[i];
+          fNWBCalibratedData.ffastLeft[fNWBCalibratedData.fmulti]    =NWB->ffastLeft[i];
+          fNWBCalibratedData.ffastRight[fNWBCalibratedData.fmulti]   =NWB->ffastRight[i];
+          fNWBCalibratedData.fTimeLeft[fNWBCalibratedData.fmulti]    =NWB->fTimeLeft[i];
+          fNWBCalibratedData.fTimeRight[fNWBCalibratedData.fmulti]   =NWB->fTimeRight[i];
+          fNWBCalibratedData.fGeoMean[fNWBCalibratedData.fmulti]     =NWB->fGeoMean[i];
+          fNWBCalibratedData.ffastGeoMean[fNWBCalibratedData.fmulti] =NWB->ffastGeoMean[i];
+          fNWBCalibratedData.fTimeMean[fNWBCalibratedData.fmulti]    =GetNWBTimeMean(NWB->fnumbar[i],NWB->fTimeLeft[i],NWB->fTimeRight[i]);
+          fNWBCalibratedData.fCalGeoMean[fNWBCalibratedData.fmulti]  =-9999;
           fNWBCalibratedData.fMatchedLeft[fNWBCalibratedData.fmulti] =GetNWBLeftMatched(NWB->fLeft[i], NWB->fnumbar[i]);
           fNWBCalibratedData.fMatchedRight[fNWBCalibratedData.fmulti]=GetNWBRightMatched(NWB->fRight[i], NWB->fnumbar[i]);
           fNWBCalibratedData.fMatchedGeoMean[fNWBCalibratedData.fmulti]=sqrt(fNWBCalibratedData.fMatchedLeft[fNWBCalibratedData.fmulti]*fNWBCalibratedData.fMatchedRight[fNWBCalibratedData.fmulti]);
-          fNWBCalibratedData->fXcm[NWBCalibrated->fmulti]         =GetNWBXcm(NWB->fnumbar[i],NWB->fTimeLeft[i],NWB->fTimeRight[i]);
-          fNWBCalibratedData->fmulti++;
+          fNWBCalibratedData.fXcm[fNWBCalibratedData.fmulti]         =GetNWBXcm(NWB->fnumbar[i],NWB->fTimeLeft[i],NWB->fTimeRight[i]);
+          fNWBCalibratedData.fmulti++;
         }
       }
     }

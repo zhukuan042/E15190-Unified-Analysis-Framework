@@ -37,6 +37,7 @@ fMBStatusLoaded(false),
 fMBHitConditionLoaded(false),
 fMBCentralityLoaded(false),
 fHiRACsICalibrated(false),
+fHiRACsIPulserCalibrated(false),
 fHiRASiCalibrated(false),
 fHiRAGeometryCalibrated(false),
 fHiRAStripBadLoaded(false),
@@ -56,13 +57,10 @@ fMicroballStatus(new MBDetectorStatus()),
 fMicroballGeometry(new MBGeometry()),
 fMicroballHitCondition(new MBHitCondition()),
 fMicroballCentrality(new MBImpactParameter()),
-fGeometryTab(new HiRAGeometry[NUM_TEL*NUM_STRIP_F*NUM_STRIP_B]),
+fHiRAGeometryTab(new HiRAGeometry(NUM_TEL,NUM_STRIP_F,NUM_STRIP_B)),
 fSiCalibrationTools(new HiRASiCalibration(NUM_TEL,NUM_STRIP_F,NUM_STRIP_B)),
-fSiHiLowMatching(new HiRASiHiLowMatching[NUM_TEL*NUM_STRIP_F+NUM_TEL*NUM_STRIP_B]),
 fCsICalibrationModule(new HiRACsICalibrationManager()),
-fTelSiThickness(new double[NUM_TEL]),
-fStripfBad(new bool*[NUM_TEL]),
-fStripbBad(new bool*[NUM_TEL])
+fHiRAStatus(new HiRADetectorStatus(NUM_TEL,NUM_STRIP_F,NUM_STRIP_B))
 {
   //Parsing DataType string to allocate specific detectors
   std::string DetectorsIncluded(DataType);
@@ -94,20 +92,9 @@ fStripbBad(new bool*[NUM_TEL])
       if(fIsFA) fForwardArrayCal = new TTreeReaderValue<ForwardArrayCalibratedData>(*fE15190Reader, "ForwardArray.");
       if(fIsVW) fVetoWallCal = new TTreeReaderValue<VetoWallCalibratedData>(*fE15190Reader, "VetoWall.");
       if(fIsMB) fMicroballCal = new TTreeReaderValue<MicroballCalibratedData>(*fE15190Reader, "uBall.");
-      if(fIsHiRA) {
-        for(int i=0; i<NUM_TEL; i++) {}
-      }
+      if(fIsHiRA) fHiRACal = new TTreeReaderValue<HiRACalibratedData>(*fE15190Reader, "HiRA.");
     }
   }
-  for(int TelNum=0; TelNum<NUM_TEL; TelNum++) {
-  fStripfBad[TelNum]= new bool[NUM_STRIP_F];
-  fStripbBad[TelNum]= new bool[NUM_STRIP_B];
-  }
-  fTelSiThickness[0]=1537; fTelSiThickness[1]=1521; fTelSiThickness[2] =1500; fTelSiThickness [3]=1496;
-  fTelSiThickness[4]=1517; fTelSiThickness[5]=1512; fTelSiThickness[6] =1491; fTelSiThickness [7]=1460;
-  fTelSiThickness[8]=1537; fTelSiThickness[9]=1536; fTelSiThickness[10]=1471; fTelSiThickness[11]=1491;
-  fCsIMylarThickness=2.076;
-  fCsIlenght=100000;
 }
 
 //____________________________________________________
@@ -130,9 +117,7 @@ E15190Reader::~E15190Reader()
       if (fIsFA) delete fForwardArrayCal;
       if (fIsVW) delete fVetoWallCal;
       if (fIsMB) delete fMicroballCal;
-      if (fIsHiRA) {
-        for(int i=0; i<NUM_TEL; i++) {}
-      }
+      if (fIsHiRA) delete fHiRACal;
     }
   }
 
@@ -146,6 +131,10 @@ E15190Reader::~E15190Reader()
   if(fFATimeCalibration) delete fFATimeCalibration;
   if(fNWAGeometry) delete fNWAGeometry;
   if(fNWBGeometry) delete fNWBGeometry;
+  if(fHiRAGeometryTab) delete fHiRAGeometryTab;
+  if(fSiCalibrationTools) delete fSiCalibrationTools;
+  if(fCsICalibrationModule) delete fCsICalibrationModule;
+  if(fHiRAStatus) delete fHiRAStatus;
 }
 
 //____________________________________________________
@@ -592,98 +581,32 @@ bool E15190Reader::IsMBHit (int num_ring, int num_det, double fast, double tail,
 int E15190Reader::LoadHiRAGeometry(const char * file_name)
 {
   if(!fIsHiRA) return 0;
-  std::ifstream FileIn(file_name);
-  if(!FileIn.is_open()) {
-    printf("Error: error while opening geometry file\n");
+  int NLines=fHiRAGeometryTab->LoadPixels(file_name);
+  if(NLines>0) {
+    fHiRAGeometryCalibrated=true;
+    printf("Loaded HiRA Geometry from file %s\n", file_name);
+    return NLines;
+  } else {
+    fHiRAGeometryCalibrated=false;
+    printf("Error: Error while loading HiRA Geometry %s\n", file_name);
     return -1;
   }
-  int NRead=0;
-
-  while (!FileIn.eof())
-  {
-    std::string LineRead;
-    std::getline(FileIn, LineRead);
-
-    if(LineRead.empty()) continue;
-    if(LineRead.find('*')==0) continue;
-
-    std::istringstream LineStream(LineRead);
-
-    int numtel;
-    int numstripf;
-    int numstripb;
-    double theta;
-    double phi;
-
-    LineStream >> numtel >> numstripf >> numstripb >> theta >> phi;
-
-    // Phi Corretions // TEMPORARY
-    if(phi<0) {
-      phi=-phi-180;
-    } else {
-      phi=-phi+180;
-    }
-
-    // Strip order corrections // TEMPORARY
-    numstripf=31-numstripf;
-
-    HiRAGeometry newGeom;
-    newGeom.numtel=numtel;
-    newGeom.stripf=numstripf;
-
-    newGeom.stripb=numstripb;
-    newGeom.thetadeg=theta;
-    newGeom.phideg=phi;
-    newGeom.theta=theta*fDegToRad;
-    newGeom.phi=phi*fDegToRad;
-
-    fGeometryTab[numtel*NUM_STRIP_F*NUM_STRIP_B+numstripf*NUM_STRIP_B+numstripb]=newGeom;
-    NRead++;
-  }
-
-  fHiRAGeometryCalibrated=true;
-  return NRead;
 }
 
 //____________________________________________________
 int E15190Reader::LoadHiRAStripBad(const char * file_name)
 {
   if(!fIsHiRA) return 0;
-  std::ifstream FileIn(file_name);
-  if(!FileIn.is_open()) {
-    printf("Error: error while opening strip bad file\n");
+  int NLines=fHiRAStatus->LoadStipBad(file_name);
+  if(NLines>0) {
+    fHiRAStripBadLoaded=true;
+    printf("Loaded HiRA Strip bad from file %s\n", file_name);
+    return NLines;
+  } else {
+    fHiRAStripBadLoaded=false;
+    printf("Error: Error while loading HiRA Strip bad %s\n", file_name);
     return -1;
   }
-  int NRead=0;
-
-  while (!FileIn.eof())
-  {
-    std::string LineRead;
-    std::getline(FileIn, LineRead);
-
-    if(LineRead.empty()) continue;
-    if(LineRead.find('*')==0) continue;
-
-    std::istringstream LineStream(LineRead);
-
-    int numtel;
-    int striptype;
-    int numstrip;
-    int isbad;
-
-    LineStream >> striptype >> numtel >> numstrip >> isbad;
-
-    if(striptype==0) {
-      fStripbBad[numtel][numstrip]=bool(isbad);
-    } else if(striptype==1) {
-      fStripfBad[numtel][numstrip]=bool(isbad);
-    }
-
-    NRead++;
-  }
-
-  fHiRAStripBadLoaded=true;
-  return NRead;
 }
 
 //____________________________________________________
@@ -722,156 +645,132 @@ int E15190Reader::LoadHiRACsICalibration(const char * file_name, int Z, int A)
 int E15190Reader::LoadHiRASiHiLowMatching(const char * file_name)
 {
   if(!fIsHiRA) return 0;
-  std::ifstream FileIn(file_name);
-  if(!FileIn.is_open()) {
-    printf("Error: error while opening Si matching file\n");
+  int NLines=fSiCalibrationTools->LoadMatching(file_name);
+  if(NLines>0) {
+    fHiRASiHiLowMatched=true;
+    printf("Loaded HiRA Silicon Hi Gain Low Gain from file %s\n", file_name);
+    return NLines;
+  } else {
+    fHiRASiHiLowMatched=false;
+    printf("Error: Error while loading HiRA Silicon Hi Gain Low Gain %s\n", file_name);
     return -1;
   }
-  int NRead=0;
-
-  while (!FileIn.eof())
-  {
-    std::string LineRead;
-    std::getline(FileIn, LineRead);
-
-    if(LineRead.empty()) continue;
-    if(LineRead.find('*')==0) continue;
-
-    std::istringstream LineStream(LineRead);
-
-    int numtel;
-    int numstrip;
-    bool FB;
-    double intercept;
-    double slope;
-    double saturationpoint;
-
-    LineStream >> numtel >> numstrip >> FB >> intercept >> slope >> saturationpoint;
-
-    HiRASiHiLowMatching newMatching;
-    newMatching.numtel=numtel;
-    newMatching.FB=FB;
-    newMatching.numstrip=numstrip;
-    newMatching.intercept=intercept;
-    newMatching.slope=slope;
-    newMatching.saturationpoint=saturationpoint;
-
-    if(FB==0) {
-      fSiHiLowMatching[numtel*NUM_STRIP_B+numstrip]=newMatching;
-    } else if (FB==1) {
-      fSiHiLowMatching[NUM_TEL*NUM_STRIP_B+numtel*NUM_STRIP_F+numstrip]=newMatching;
-    }
-    NRead++;
-  }
-
-  fHiRASiHiLowMatched=true;
-  return NRead;
 }
 
 //____________________________________________________
 int E15190Reader::LoadHiRACsIPulserInfo(const char * file_name)
 {
-  return fCsICalibrationModule->LoadPulserInfo(file_name);
+  if(!fIsHiRA) return 0;
+  int NLines=fCsICalibrationModule->LoadPulserInfo(file_name);
+  if(NLines>0) {
+    fHiRACsIPulserCalibrated=true;
+    printf("Loaded HiRA CsI pulser settings from file %s\n", file_name);
+    return NLines;
+  } else {
+    fHiRACsIPulserCalibrated=false;
+    printf("Error: Error while loading HiRA CsI pulser settings %s\n", file_name);
+    return -1;
+  }
 }
 
 //____________________________________________________
-bool E15190Reader::IsStripfBad(int telescope, int strip_front)
+bool E15190Reader::IsStripfBad(int telescope, int strip_front) const
 {
-  return fHiRAStripBadLoaded ? fStripfBad[telescope][strip_front] : false;
+  return fHiRAStripBadLoaded ? fHiRAStatus->IsStripfBad(telescope, strip_front) : false;
 }
 
 //____________________________________________________
-bool E15190Reader::IsStripbBad(int telescope, int strip_back)
+bool E15190Reader::IsStripbBad(int telescope, int strip_back) const
 {
-  return fHiRAStripBadLoaded ? fStripbBad[telescope][strip_back] : false;
+  return fHiRAStripBadLoaded ? fHiRAStatus->IsStripbBad(telescope, strip_back) : false;
 }
 
 //____________________________________________________
-double E15190Reader::GetThetaPixel(int telescope, int strip_front, int strip_back)
+double E15190Reader::GetThetaPixel(int telescope, int strip_front, int strip_back) const
 {
-  return fHiRAGeometryCalibrated ? fGeometryTab[telescope*NUM_STRIP_F*NUM_STRIP_B+strip_front*NUM_STRIP_B+strip_back].theta : -9999;
+  return fHiRAGeometryCalibrated ? fHiRAGeometryTab->GetThetaPixel(telescope,strip_front,strip_back) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetPhiPixel(int telescope, int strip_front, int strip_back)
+double E15190Reader::GetPhiPixel(int telescope, int strip_front, int strip_back) const
 {
-  return fHiRAGeometryCalibrated ? fGeometryTab[telescope*NUM_STRIP_F*NUM_STRIP_B+strip_front*NUM_STRIP_B+strip_back].phi : -9999;
+  return fHiRAGeometryCalibrated ? fHiRAGeometryTab->GetPhiPixel(telescope,strip_front,strip_back) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetThetaPixelDeg(int telescope, int strip_front, int strip_back)
+double E15190Reader::GetThetaPixelDeg(int telescope, int strip_front, int strip_back) const
 {
-  return fHiRAGeometryCalibrated ? fGeometryTab[telescope*NUM_STRIP_F*NUM_STRIP_B+strip_front*NUM_STRIP_B+strip_back].thetadeg : -9999;
+  return fHiRAGeometryCalibrated ? fHiRAGeometryTab->GetThetaPixelDeg(telescope,strip_front,strip_back) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetPhiPixelDeg(int telescope, int strip_front, int strip_back)
+double E15190Reader::GetPhiPixelDeg(int telescope, int strip_front, int strip_back) const
 {
-  return fHiRAGeometryCalibrated ? fGeometryTab[telescope*NUM_STRIP_F*NUM_STRIP_B+strip_front*NUM_STRIP_B+strip_back].phideg : -9999;
+  return fHiRAGeometryCalibrated ? fHiRAGeometryTab->GetPhiPixelDeg(telescope,strip_front,strip_back) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetSifIntercept(int telescope, int numstrip)
+double E15190Reader::GetSifIntercept(int telescope, int numstrip) const
 {
   return fHiRASiCalibrated ? fSiCalibrationTools->GetIntercept(telescope,numstrip,0) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetSibIntercept(int telescope, int numstrip)
+double E15190Reader::GetSibIntercept(int telescope, int numstrip) const
 {
   return fHiRASiCalibrated ? fSiCalibrationTools->GetIntercept(telescope,numstrip,1) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetSifSlope(int telescope, int numstrip)
+double E15190Reader::GetSifSlope(int telescope, int numstrip) const
 {
   return fHiRASiCalibrated ? fSiCalibrationTools->GetSlope(telescope,numstrip,0) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetSibSlope(int telescope, int numstrip)
+double E15190Reader::GetSibSlope(int telescope, int numstrip) const
 {
-  return fHiRASiCalibrated ? fSiCalibrationTools->GetSlope(telescope,numstrip,0) : -9999;
+  return fHiRASiCalibrated ? fSiCalibrationTools->GetSlope(telescope,numstrip,1) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetSifHiLowMatched(int chHi, int chLow, int telescope, int numstrip)
+double E15190Reader::GetSifHiLowMatched(int chHi, int chLow, int telescope, int numstrip) const
 {
-  if(!fHiRASiHiLowMatched) return -9999;
-  if(chLow<fSiHiLowMatching[NUM_TEL*NUM_STRIP_B+telescope*NUM_STRIP_F+numstrip].saturationpoint) {
-    return chHi;
-  }
-  else {
-    return chLow*fSiHiLowMatching[NUM_TEL*NUM_STRIP_B+telescope*NUM_STRIP_F+numstrip].slope+fSiHiLowMatching[NUM_TEL*NUM_STRIP_B+telescope*NUM_STRIP_F+numstrip].intercept;
-  }
+  return fHiRASiHiLowMatched ? fSiCalibrationTools->GetHiLowMatched(gRandom->Uniform(chHi-0.5,chHi+0.5),gRandom->Uniform(chLow-0.5,chLow+0.5),telescope,numstrip,0) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetSibHiLowMatched(int chHi, int chLow, int telescope, int numstrip)
+double E15190Reader::GetSibHiLowMatched(int chHi, int chLow, int telescope, int numstrip) const
 {
-  if(!fHiRASiHiLowMatched) return -9999;
-  if(chLow<fSiHiLowMatching[telescope*NUM_STRIP_B+numstrip].saturationpoint) {
-    return chHi;
-  }
-  else {
-    return chLow*fSiHiLowMatching[telescope*NUM_STRIP_B+numstrip].slope+fSiHiLowMatching[telescope*NUM_STRIP_B+numstrip].intercept;
-  }
+  return fHiRASiHiLowMatched ? fSiCalibrationTools->GetHiLowMatched(gRandom->Uniform(chHi-0.5,chHi+0.5),gRandom->Uniform(chLow-0.5,chLow+0.5),telescope,numstrip,1): -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetCsIEMeV(int ch, int telescope, int numcsi, int Z, int A)
+double E15190Reader::GetSifHiLowMatchedEMeV(int chHi, int chLow, int telescope, int numstrip) const
 {
-  return fHiRACsICalibrated ? fCsICalibrationModule->GetEnergyValue(gRandom->Uniform(ch-0.5,ch+0.5), telescope, numcsi, Z, A) : -9999;
+  return fHiRASiHiLowMatched ? fSiCalibrationTools->GetEnergyHiLowMatched(gRandom->Uniform(chHi-0.5,chHi+0.5),gRandom->Uniform(chLow-0.5,chLow+0.5),telescope,numstrip,0): -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetSifEMeV(int ch, int telescope, int numstripf)
+double E15190Reader::GetSibHiLowMatchedEMeV(int chHi, int chLow, int telescope, int numstrip) const
+{
+  return fHiRASiHiLowMatched ? fSiCalibrationTools->GetEnergyHiLowMatched(gRandom->Uniform(chHi-0.5,chHi+0.5),gRandom->Uniform(chLow-0.5,chLow+0.5),telescope,numstrip,1): -9999;
+}
+
+//____________________________________________________
+double E15190Reader::GetCsIEMeV(int ch, int telescope, int numcsi, int Z, int A) const
+{
+  return fHiRACsICalibrated&&fHiRACsIPulserCalibrated ? fCsICalibrationModule->GetEnergyValue(gRandom->Uniform(ch-0.5,ch+0.5), telescope, numcsi, Z, A) : -9999;
+}
+
+//____________________________________________________
+double E15190Reader::GetSifEMeV(int ch, int telescope, int numstripf) const
 {
   return fHiRASiCalibrated ? fSiCalibrationTools->GetEnergy(gRandom->Uniform(ch-0.5,ch+0.5),telescope,numstripf,0) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetSibEMeV(int ch, int telescope, int numstripb)
+double E15190Reader::GetSibEMeV(int ch, int telescope, int numstripb) const
 {
   return fHiRASiCalibrated ? fSiCalibrationTools->GetEnergy(gRandom->Uniform(ch-0.5,ch+0.5),telescope,numstripb,1) : -9999;
 }
@@ -984,7 +883,7 @@ void E15190Reader::LoopOnCalibratedData(const char * file_name, Long64_t evt_amo
       //Insert Microball code here
     }
     if (fIsHiRA) {
-      for(int i=0; i<NUM_TEL; i++) {}
+      HiRACalibratedData * HiRA = fHiRACal->Get();
       //Insert HiRA code here
     }
 

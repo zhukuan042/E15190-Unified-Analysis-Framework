@@ -27,6 +27,7 @@
 #include "HTVetoWallRootEvent.h"
 #include "HTMicroballRootEvent.h"
 #include "HTHiRARootEvent.h"
+#include "HiRACalibratedRootEvent.h"
 
 #include "NWPositionCalibration.h"
 #include "NWCosmicRayManager.h"
@@ -45,8 +46,7 @@
 #include <HiRAGeometry.h>
 #include <HiRASiCalibration.h>
 #include <HiRACsICalibration.h>
-#include <HiRASiHiLowMatching.h>
-
+#include <HiRADetectorStatus.h>
 
 
 #include "shared.h"
@@ -126,23 +126,25 @@ public :
   bool IsMBDetectorBad(int num_ring, int num_det) const;
   bool IsMBHit (int num_ring, int num_det, double fast, double tail, double time) const;
   //HiRA methods
-  bool IsStripfBad(int telescope, int strip_front);
-  bool IsStripbBad(int telescope, int strip_back);
-  double GetThetaPixel(int telescope, int strip_front, int strip_back);
-  double GetPhiPixel(int telescope, int strip_front, int strip_back);
-  double GetThetaPixelDeg(int telescope, int strip_front, int strip_back);
-  double GetPhiPixelDeg(int telescope, int strip_front, int strip_back);
-  double GetSifIntercept(int telescope, int numstrip);
-  double GetSibIntercept(int telescope, int numstrip);
-  double GetSifSlope(int telescope, int numstrip);
-  double GetSibSlope(int telescope, int numstrip);
-  double GetCsIIntercept(int telescope, int numcsi);
-  double GetCsISlope(int telescope, int numcsi);
-  double GetSifHiLowMatched(int chHi, int chLow, int telescope, int numstrip);
-  double GetSibHiLowMatched(int chHi, int chLow, int telescope, int numstrip);
-  double GetCsIEMeV(int ch, int telescope, int numcsi, int Z=1, int A=1);
-  double GetSifEMeV(int ch, int telescope, int numstripf);
-  double GetSibEMeV(int ch, int telescope, int numstripb);
+  bool IsStripfBad(int telescope, int strip_front) const;
+  bool IsStripbBad(int telescope, int strip_back) const;
+  double GetThetaPixel(int telescope, int strip_front, int strip_back) const;
+  double GetPhiPixel(int telescope, int strip_front, int strip_back) const;
+  double GetThetaPixelDeg(int telescope, int strip_front, int strip_back) const;
+  double GetPhiPixelDeg(int telescope, int strip_front, int strip_back) const;
+  double GetSifIntercept(int telescope, int numstrip) const;
+  double GetSibIntercept(int telescope, int numstrip) const;
+  double GetSifSlope(int telescope, int numstrip) const;
+  double GetSibSlope(int telescope, int numstrip) const;
+  double GetCsIIntercept(int telescope, int numcsi) const;
+  double GetCsISlope(int telescope, int numcsi) const;
+  double GetSifHiLowMatched(int chHi, int chLow, int telescope, int numstrip) const;
+  double GetSibHiLowMatched(int chHi, int chLow, int telescope, int numstrip) const;
+  double GetCsIEMeV(int ch, int telescope, int numcsi, int Z=1, int A=1) const;
+  double GetSifEMeV(int ch, int telescope, int numstripf) const;
+  double GetSibEMeV(int ch, int telescope, int numstripb) const;
+  double GetSifHiLowMatchedEMeV(int chHi, int chLow, int telescope, int numstrip) const;
+  double GetSibHiLowMatchedEMeV(int chHi, int chLow, int telescope, int numstrip) const;
 
   // Examples
   void   Loop(const char *, Long64_t evt_amount=0);
@@ -172,6 +174,7 @@ private :
   TTreeReaderValue<VetoWallCalibratedData> *fVetoWallCal;
   TTreeReaderValue<ForwardArrayCalibratedData> *fForwardArrayCal;
   TTreeReaderValue<MicroballCalibratedData> *fMicroballCal;
+  TTreeReaderValue<HiRACalibratedData> *fHiRACal;
 
   //Calibrated objects for event building
   NeutronWallCalibratedData fNWACalibratedData;
@@ -179,6 +182,7 @@ private :
   VetoWallCalibratedData fVetoWallCalibratedData;
   ForwardArrayCalibratedData fForwardArrayCalibratedData;
   MicroballCalibratedData fMicroballCalibratedData;
+  HiRACalibratedData fHiRACalibratedData;
 
   TChain      * fChain;
 
@@ -216,6 +220,7 @@ private :
   bool fMBHitConditionLoaded;
   bool fMBCentralityLoaded;
   bool fHiRACsICalibrated;
+  bool fHiRACsIPulserCalibrated;
   bool fHiRASiCalibrated;
   bool fHiRAGeometryCalibrated;
   bool fHiRAStripBadLoaded;
@@ -238,17 +243,12 @@ private :
   MBHitCondition        * fMicroballHitCondition;
   MBImpactParameter     * fMicroballCentrality;
 
-  HiRAGeometry *fGeometryTab;
+  HiRAGeometry *fHiRAGeometryTab;
   HiRASiCalibration *fSiCalibrationTools;
-  HiRASiHiLowMatching *fSiHiLowMatching;
   HiRACsICalibrationManager *fCsICalibrationModule;
-  double * fTelSiThickness;
-  double   fCsIMylarThickness;
-  double   fCsIlenght;
-  bool   **fStripfBad;
-  bool   **fStripbBad;
+  HiRADetectorStatus *fHiRAStatus;
 
-  void PrintPercentage(Long64_t, Long64_t) const; 
+  void PrintPercentage(Long64_t, Long64_t) const;
 };
 
 #endif
