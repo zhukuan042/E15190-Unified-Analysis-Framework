@@ -23,6 +23,7 @@ Table of contents
   * [Run the Code on NSCL ember](#run-the-code-on-nscl-ember)
   * [Calibrated Output Data](#calibrated-output-data)
   * [Customized Methods](#customized-methods)
+  * [How to add new features](#how-to-add-new-features)
   * [Notes for Developers](#notes-for-developers)
 <!--te-->
 
