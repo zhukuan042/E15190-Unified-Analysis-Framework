@@ -63,3 +63,4 @@ To be written.
 To be written.
 ## The E15190Reader Framework
 ### Framework Description
+The framework allows to handle data of the E15190 experiment, with HiRAEVTMapper data structures, by including all the existing calibrations and detector analysis tools.
