@@ -41,3 +41,9 @@ clicking on the "Clone or Download" button on the right side of the page and the
 ### Requirements
 The code is compiled using the g++ compiler.
 In order to compile and run the code ROOT 6 is required (the program has been tested with version 6.04.02). Please note that, since the program uses advanced ROOT 6 features, it is not possible to run or compile it by using an installation of ROOT 5. Ensure ROOT 6 environment variables are correctly exported. Usually one can use the command "source /mnt/misc/sw/x86_64/Debian/8/root/gnu/x.xx.xx/bin/thisroot.sh" or type it in the ".bash" file.
+### Compile the code
+To compile the code by using gcc compiler use the command:
+````
+$ make -jN install
+````
+where, in multi-cpu machines, N can be used to specify the number of core to use in the compilation and significantly speed up the procedure.
