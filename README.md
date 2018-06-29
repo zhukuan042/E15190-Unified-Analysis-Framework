@@ -47,3 +47,7 @@ To compile the code by using gcc compiler use the command:
 $ make -jN install
 ````
 where, in multi-cpu machines, N can be used to specify the number of core to use in the compilation and significantly speed up the procedure.
+To proceed with a clean compilation run before the command:
+````
+$ make clean
+````
