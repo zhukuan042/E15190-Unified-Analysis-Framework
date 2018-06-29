@@ -63,4 +63,4 @@ To be written.
 To be written.
 ## The E15190Reader Framework
 ### Framework Description
-The framework allows to handle data of the E15190 experiment, with HiRAEVTMapper data structures, by including all the existing calibrations and detector analysis tools.
+The framework allows to handle data of the E15190 experiment, with HiRAEVTMapper data structures, by including all the existing calibrations and detector analysis tools. The framework is fully versatile since it allows to include any possible combination of existing detectors in the analysis, and any possible combination of required calibrations. One of the most important features of the framework is the production of new calibrated data structures
