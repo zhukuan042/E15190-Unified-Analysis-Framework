@@ -157,6 +157,7 @@ public :
 
   //Customized methods
   // input here customized methods
+  void   CreateUsefulVetoWallHistograms(const char *, Long64_t evt_amount=0);
 
 private :
   //The TTreeReader

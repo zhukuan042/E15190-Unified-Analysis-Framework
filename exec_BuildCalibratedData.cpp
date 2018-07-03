@@ -44,6 +44,8 @@ int main (int argc, char ** argv)
     E15190Analyzer.LoadNWPositionCalibration("calibrations/NWA_Position_Calibration_run3014.dat", "NWA");
     E15190Analyzer.LoadNWGeometryFiducialPoints("calibrations/NWB_Geometry.dat", "NWB");
     E15190Analyzer.LoadNWTimeCalibration("calibrations/NWB_Time_Offset_run3013.dat", "NWB");
+    E15190Analyzer.LoadNWPulseHeightMatching("calibrations/NWB_GainMatching_Co60.dat", "NWB");
+    E15190Analyzer.LoadNWPulseHeightMatching("calibrations/NWA_GainMatching_Co60.dat", "NWA");
     E15190Analyzer.LoadFATimeCalibration("calibrations/FA_Time_Offset_run4557.dat");
     //E15190Analyzer.LoadFATimeCalibration("calibrations/FA_Time_Offset_run2523.dat");
     E15190Analyzer.LoadFATimePulseHeightCorrection("calibrations/FA_PulseHeightCorrection_run4543.dat");

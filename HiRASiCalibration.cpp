@@ -48,9 +48,8 @@ int HiRASiCalibration::LoadCalibration(const char * file_name)
     int numstrip;
     bool FB;
 
-    LineStream >> FB;
-
-    LineStream  >> numtel >> numstrip >> fIntercept[FB*fNumTel*fNumStripf+numtel*(FB?fNumStripb:fNumStripf)+numstrip]
+    LineStream >> FB >> numtel >> numstrip;
+    LineStream >> fIntercept[FB*fNumTel*fNumStripf+numtel*(FB?fNumStripb:fNumStripf)+numstrip]
     >> fSlope[FB*fNumTel*fNumStripf+numtel*(FB?fNumStripb:fNumStripf)+numstrip];
 
     NRead++;
@@ -84,7 +83,8 @@ int HiRASiCalibration::LoadMatching(const char * file_name)
     int numstrip;
     bool FB;
 
-    LineStream  >> numtel >> numstrip >> FB >> fMatchingIntercept[FB*fNumTel*fNumStripf+numtel*(FB?fNumStripb:fNumStripf)+numstrip]
+    LineStream  >> numtel >> numstrip >> FB;
+    LineStream >> fMatchingIntercept[FB*fNumTel*fNumStripf+numtel*(FB?fNumStripb:fNumStripf)+numstrip]
     >> fMatchingSlope[FB*fNumTel*fNumStripf+numtel*(FB?fNumStripb:fNumStripf)+numstrip]>>fMatchingSaturationPoint[FB*fNumTel*fNumStripf+numtel*(FB?fNumStripb:fNumStripf)+numstrip];
 
     NRead++;
