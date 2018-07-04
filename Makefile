@@ -20,6 +20,7 @@ OBJS += MBDetectorStatus.$(ObjSuf) MBGeometry.$(ObjSuf) MBHitCondition.$(ObjSuf)
 OBJS += EnergyLossModule.$(ObjSuf) nuclear_masses.$(ObjSuf) HiRACsICalibration.$(ObjSuf) HiRASiCalibration.$(ObjSuf) HTHiRARootEvent.$(ObjSuf) HiRADetectorStatus.$(ObjSuf) HiRAGeometry.$(ObjSuf)
 OBJS += HiRACalibratedRootEvent.$(ObjSuf)
 OBJS += HTRunInfo.$(ObjSuf) HTDAQStackInfo.$(ObjSuf) HTExperimentInfo.$(ObjSuf) HTModuleInfo.$(ObjSuf)
+OBJS += VWPulseHeightCalibration.$(ObjSuf)
 OBJS := $(addprefix $(ObjDir), $(OBJS))
 
 RLIBS := -L./$(LibDir)

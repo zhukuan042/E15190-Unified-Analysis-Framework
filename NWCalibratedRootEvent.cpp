@@ -27,6 +27,7 @@ fmulti(0)
   fDistcm      =new Double_t[num_bars];
   fDistRancm   =new Double_t[num_bars];
   fXcm         =new Double_t[num_bars];
+  fIsGamma     =new Bool_t[num_bars];
 }
 
 //________________________________________________
@@ -56,6 +57,7 @@ fmulti(0)
   fDistcm      =new Double_t[25];
   fDistRancm   =new Double_t[25];
   fXcm         =new Double_t[25];
+  fIsGamma     =new Bool_t[25];
 }
 
 //________________________________________________
@@ -84,6 +86,7 @@ NeutronWallCalibratedData::~NeutronWallCalibratedData()
   delete [] fDistcm      ;
   delete [] fDistRancm   ;
   delete [] fXcm         ;
+  delete [] fIsGamma     ;
 }
 
 //________________________________________________
@@ -97,6 +100,7 @@ fmulti(0)
   fTimeBottom =new Double_t[num_bars];
   fGeoMean    =new Double_t[num_bars];
 
+  fGeoMeanMatched = new Double_t[num_bars];
   fA          =new Int_t[num_bars];
   fZ          =new Int_t[num_bars];
 }
@@ -112,6 +116,7 @@ fmulti(0)
   fTimeBottom =new Double_t[25];
   fGeoMean    =new Double_t[25];
 
+  fGeoMeanMatched = new Double_t[25];
   fA          =new Int_t[25];
   fZ          =new Int_t[25];
 }
@@ -126,6 +131,7 @@ VetoWallCalibratedData::~VetoWallCalibratedData()
   delete [] fTimeBottom;
   delete [] fGeoMean ;
 
+  delete [] fGeoMeanMatched;
   delete [] fA;
   delete [] fZ;
 }
@@ -137,8 +143,6 @@ fmulti(0)
   fnumdet      =new Int_t   [num_dets];
   fE           =new Short_t [num_dets];
   fTime        =new Double_t[num_dets];
-
-  fECal        =new Double_t[num_dets];
 }
 
 //________________________________________________
@@ -148,8 +152,6 @@ fmulti(0)
   fnumdet      =new Int_t   [18];
   fE           =new Short_t [18];
   fTime        =new Double_t[18];
-
-  fECal        =new Double_t[18];
 }
 
 //________________________________________________
@@ -158,6 +160,4 @@ ForwardArrayCalibratedData::~ForwardArrayCalibratedData()
   delete [] fnumdet;
   delete [] fE;
   delete [] fTime;
-
-  delete [] fECal;
 }

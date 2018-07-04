@@ -28,6 +28,7 @@
 #include "HTMicroballRootEvent.h"
 #include "HTHiRARootEvent.h"
 #include "HiRACalibratedRootEvent.h"
+#include <HTRunInfo.h>
 
 #include "NWPositionCalibration.h"
 #include "NWCosmicRayManager.h"
@@ -36,6 +37,7 @@
 #include "NWGeometry.h"
 #include "FATimeCalibration.h"
 #include "NWPulseHeightCalibration.h"
+#include "VWPulseHeightCalibration.h"
 
 #include "MBCalibratedRootEvent.h"
 #include "MBDetectorStatus.h"
@@ -70,6 +72,8 @@ public :
   E15190Reader(TChain *, const char * opt="HiRA NWA NWB VW FA uBall", bool IsDataCalibrated=0);
   ~E15190Reader();
 
+  void InitAllCalibrations(HTRunInfo * );
+
   int LoadNWPositionCalibration(const char * file_name, const char * WallToCalibrate);
   int LoadNWTimeCalibration(const char * file_name, const char * WallToCalibrate);
   int LoadNWCosmicRayPosition(const char *, const char * WallToCalibrate);
@@ -78,6 +82,7 @@ public :
   int LoadNWPulseHeightCalibration(const char *, const char * WallToCalibrate);
   int LoadFATimeCalibration(const char * file_name);
   int LoadFATimePulseHeightCorrection(const char * file_name);
+  int LoadVWGainMatchig(const char * file_name);
   int LoadMBGeometry(const char * file_name);
   int LoadMBDetectorStatus(const char * file_name);
   int LoadMBFastSlowHitCondition(const char * file_name);
@@ -116,6 +121,7 @@ public :
   double GetNWBRightMatched(double ch, int num_bar) const;
   double GetFATimeOffset(int num_det) const;
   double GetFATimePulseHeightCorrection(int num_det, double pulse_height) const;
+  double GetVWGeoMeanMatched(double ch, int num_bar) const;
   // Microball methods
   double GetTheta(int num_ring, int num_det) const;
   double GetPhi(int num_ring, int num_det) const;
@@ -216,6 +222,7 @@ private :
   bool fNWAPulseHeightCalibrated;
   bool fNWBPulseHeightCalibrated;
   bool fFATimeCalibrated;
+  bool fVWGainMatched;
   bool fMBGeometryLoaded;
   bool fMBStatusLoaded;
   bool fMBHitConditionLoaded;
@@ -238,6 +245,7 @@ private :
   NWPulseHeightCalibration * fNWAPulseHeightCalibrationTools;
   NWPulseHeightCalibration * fNWBPulseHeightCalibrationTools;
   FATimeCalibration     * fFATimeCalibration;
+  VWPulseHeightCalibration * fVWPulseHeightCalibrationTools;
 
   MBDetectorStatus      * fMicroballStatus;
   MBGeometry            * fMicroballGeometry;

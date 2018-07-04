@@ -31,6 +31,7 @@ void E15190Reader::BuildCalibratedEvent()
         fNWACalibratedData.fPhiRan[fNWACalibratedData.fmulti]      =GetNWAPhiRan(NWA->fnumbar[i],fNWACalibratedData.fXcm[fNWACalibratedData.fmulti]);
         fNWACalibratedData.fDistcm[fNWACalibratedData.fmulti]      =GetNWADistance(NWA->fnumbar[i],fNWACalibratedData.fXcm[fNWACalibratedData.fmulti]);
         fNWACalibratedData.fDistRancm[fNWACalibratedData.fmulti]   =GetNWADistanceRan(NWA->fnumbar[i],fNWACalibratedData.fXcm[fNWACalibratedData.fmulti]);
+        fNWACalibratedData.fIsGamma[fNWACalibratedData.fmulti]     =false;
         fNWACalibratedData.fmulti++;
       }
     }
@@ -63,6 +64,7 @@ void E15190Reader::BuildCalibratedEvent()
         fNWBCalibratedData.fPhiRan[fNWBCalibratedData.fmulti]      =GetNWBPhiRan(NWB->fnumbar[i],fNWBCalibratedData.fXcm[fNWBCalibratedData.fmulti]);
         fNWBCalibratedData.fDistcm[fNWBCalibratedData.fmulti]      =GetNWBDistance(NWB->fnumbar[i],fNWBCalibratedData.fXcm[fNWBCalibratedData.fmulti]);
         fNWBCalibratedData.fDistRancm[fNWBCalibratedData.fmulti]   =GetNWBDistanceRan(NWB->fnumbar[i],fNWBCalibratedData.fXcm[fNWBCalibratedData.fmulti]);
+        fNWBCalibratedData.fIsGamma[fNWBCalibratedData.fmulti]     =false;
         fNWBCalibratedData.fmulti++;
       }
     }
@@ -81,6 +83,7 @@ void E15190Reader::BuildCalibratedEvent()
         fVetoWallCalibratedData.fTimeTop[fVetoWallCalibratedData.fmulti]    =VetoWall->fTimeTop[i];
         fVetoWallCalibratedData.fTimeBottom[fVetoWallCalibratedData.fmulti] =VetoWall->fTimeBottom[i];
         fVetoWallCalibratedData.fGeoMean[fVetoWallCalibratedData.fmulti]    =VetoWall->fGeoMean[i];
+        fVetoWallCalibratedData.fGeoMeanMatched[fVetoWallCalibratedData.fmulti] =GetVWGeoMeanMatched(VetoWall->fGeoMean[i], VetoWall->fnumbar[i]);
         fVetoWallCalibratedData.fZ[fVetoWallCalibratedData.fmulti]          =-1;
         fVetoWallCalibratedData.fA[fVetoWallCalibratedData.fmulti]          =-1;
         fVetoWallCalibratedData.fmulti++;
@@ -102,7 +105,6 @@ void E15190Reader::BuildCalibratedEvent()
         fForwardArrayCalibratedData.fnumdet[fForwardArrayCalibratedData.fmulti]    = ForwardArray->fnumdet[i];
         fForwardArrayCalibratedData.fE[fForwardArrayCalibratedData.fmulti]         = ForwardArray->fE[i];
         fForwardArrayCalibratedData.fTime[fForwardArrayCalibratedData.fmulti]      = ForwardArray->fTime[i]-GetFATimeOffset(ForwardArray->fnumdet[i])+GetFATimePulseHeightCorrection(ForwardArray->fnumdet[i], ForwardArray->fE[i]);
-        fForwardArrayCalibratedData.fECal[fForwardArrayCalibratedData.fmulti]      = -9999;
         fForwardArrayCalibratedData.fmulti++;
       }
     }
@@ -122,7 +124,7 @@ void E15190Reader::BuildCalibratedEvent()
   }
 
   if(fIsHiRA) {
-    
+
   }
 }
 

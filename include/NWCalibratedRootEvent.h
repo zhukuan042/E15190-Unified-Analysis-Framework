@@ -30,6 +30,7 @@ public:
   Double_t *fDistcm;      //[fmulti]
   Double_t *fDistRancm;   //[fmulti]
   Double_t *fXcm;         //[fmulti]
+  Bool_t   *fIsGamma;     //[fmulti]
 
   NeutronWallCalibratedData(int);
   NeutronWallCalibratedData();
@@ -49,6 +50,7 @@ public:
   Double_t *fTimeBottom;  //[fmulti]
   Double_t *fGeoMean;     //[fmulti]
 
+  Double_t *fGeoMeanMatched; //[fmulti]
   Int_t    fidmulti;
   Int_t    *fZ;           //[fmulti]
   Int_t    *fA;           //[fmulti]
@@ -67,8 +69,6 @@ public:
   Int_t    *fnumdet;      //[fmulti]
   Short_t  *fE;           //[fmulti]
   Double_t *fTime;        //[fmulti]
-
-  Double_t *fECal;        //[fmulti]
 
   Double_t fTimeMean;
   Double_t fTimeMin;

@@ -27,6 +27,7 @@ HTExperimentInfo::~HTExperimentInfo()
   if(fNWBGeometryFileName) delete [] fNWBGeometryFileName;
   if(fFATimeCalibrationFileName) delete [] fFATimeCalibrationFileName;
   if(fFAPulseHeightCorrectionFileName) delete [] fFAPulseHeightCorrectionFileName;
+  if(fVWGainMatchingCalibrationFileName) delete [] fVWGainMatchingCalibrationFileName;
   if(fMBDetectorStatusFileName) delete [] fMBDetectorStatusFileName;
   if(fMBGeometryFileName) delete [] fMBGeometryFileName;
   if(fMBImpactParameterFileName) delete [] fMBImpactParameterFileName;
@@ -75,6 +76,7 @@ int HTExperimentInfo::InitClass(const char *file_name)
   fNWBGeometryFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fFATimeCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fFAPulseHeightCorrectionFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fVWGainMatchingCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fMBDetectorStatusFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fMBGeometryFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fMBImpactParameterFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
@@ -209,6 +211,7 @@ HTRunInfo * HTExperimentInfo::GetRunInfo(int run_num) const
   newRunInfo->SetNWBGeometryCalibrationFile(	 fNWBGeometryFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetFATimeCalibrationFile( 	 fFATimeCalibrationFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetFAPulseHeightCorrectionFile(	 fFAPulseHeightCorrectionFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetVWGainMatchingCalibrationFile(	 fVWGainMatchingCalibrationFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetMBDetectorStatusFile(		 fMBDetectorStatusFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetMBGeometryFile(		 fMBGeometryFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetMBImpactParameterFile( 	 fMBImpactParameterFileName[run_num-fFirstRun].c_str());
@@ -337,6 +340,8 @@ void HTExperimentInfo::ParseSetConfigLineRunInfo(const char *line_to_parse, int 
     fFATimeCalibrationFileName[run_num-fFirstRun].assign(NewValue);
   } else if (ValueToSet.compare("FA_PULSE_HEIGHT_CORRECTION")==0) {
     fFAPulseHeightCorrectionFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("VW_GAIN_MATCHING_CALIBRATION")==0) {
+    fVWGainMatchingCalibrationFileName[run_num-fFirstRun].assign(NewValue);
   } else if (ValueToSet.compare("MB_DETECTOR_STATUS")==0) {
     fMBDetectorStatusFileName[run_num-fFirstRun].assign(NewValue);
   } else if (ValueToSet.compare("MB_GEOMETRY")==0) {

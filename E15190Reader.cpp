@@ -32,6 +32,7 @@ fNWBPulseHeightMatched(false),
 fNWAPulseHeightCalibrated(false),
 fNWBPulseHeightCalibrated(false),
 fFATimeCalibrated(false),
+fVWGainMatched(false),
 fMBGeometryLoaded(false),
 fMBStatusLoaded(false),
 fMBHitConditionLoaded(false),
@@ -53,6 +54,7 @@ fNWBGeometry(new NWGeometry(NUM_BARS_NWB)),
 fNWAPulseHeightCalibrationTools(new NWPulseHeightCalibration(NUM_BARS_NWA)),
 fNWBPulseHeightCalibrationTools(new NWPulseHeightCalibration(NUM_BARS_NWB)),
 fFATimeCalibration(new FATimeCalibration(NUM_DETECTORS_FA)),
+fVWPulseHeightCalibrationTools(new VWPulseHeightCalibration(NUM_BARS_VW)),
 fMicroballStatus(new MBDetectorStatus()),
 fMicroballGeometry(new MBGeometry()),
 fMicroballHitCondition(new MBHitCondition()),
@@ -129,6 +131,7 @@ E15190Reader::~E15190Reader()
   if(fNWATimeCalibration) delete fNWATimeCalibration;
   if(fNWBTimeCalibration) delete fNWBTimeCalibration;
   if(fFATimeCalibration) delete fFATimeCalibration;
+  if(fVWPulseHeightCalibrationTools) delete fVWPulseHeightCalibrationTools;
   if(fNWAGeometry) delete fNWAGeometry;
   if(fNWBGeometry) delete fNWBGeometry;
   if(fHiRAGeometryTab) delete fHiRAGeometryTab;
@@ -136,6 +139,31 @@ E15190Reader::~E15190Reader()
   if(fCsICalibrationModule) delete fCsICalibrationModule;
   if(fHiRAStatus) delete fHiRAStatus;
 }
+
+//____________________________________________________
+void E15190Reader::InitAllCalibrations(HTRunInfo * CurrRunInfo)
+{
+  LoadNWPositionCalibration(CurrRunInfo->GetNWBPositionCalibrationFileName(), "NWB");
+  LoadNWPositionCalibration(CurrRunInfo->GetNWAPositionCalibrationFileName(), "NWA");
+  LoadNWGeometryFiducialPoints(CurrRunInfo->GetNWBGeometryCalibrationFileName(), "NWB");
+  LoadNWTimeCalibration(CurrRunInfo->GetNWBTimeOffsetCalibrationFileName(), "NWB");
+  LoadNWPulseHeightMatching(CurrRunInfo->GetNWBGainMatchingCalibrationFileName(), "NWB");
+  LoadNWPulseHeightMatching(CurrRunInfo->GetNWAGainMatchingCalibrationFileName(), "NWA");
+  LoadFATimeCalibration(CurrRunInfo->GetFATimeCalibrationFileName());
+  LoadFATimePulseHeightCorrection(CurrRunInfo->GetFAPulseHeightCorrectionFileName());
+  LoadVWGainMatchig(CurrRunInfo->GetVWGainMatchingCalibrationFileName());
+  LoadMBGeometry(CurrRunInfo->GetMBGeometryFileName());
+  LoadMBDetectorStatus(CurrRunInfo->GerMBDetectorStatusFileName());
+  LoadMBFastSlowHitCondition(CurrRunInfo->GetMBHitConditionFileName());
+  LoadMBCentrality(CurrRunInfo->GetMBImpactParameterFileName());
+  LoadHiRAGeometry(CurrRunInfo->GetHiRAGeometryFileName());
+  LoadHiRASiCalibration(CurrRunInfo->GetHiRASiEnergyCalibrationFileName());
+  LoadHiRAStripBad(CurrRunInfo->GetHiRADetectorStatusFileName());
+  LoadHiRACsIPulserInfo(CurrRunInfo->GetHiRACsIPulserFileName());
+  LoadHiRASiHiLowMatching(CurrRunInfo->GetHiRASiHiLowMatchingFileName());
+  LoadHiRACsICalibration(CurrRunInfo->GetNWBGeometryCalibrationFileName(), 1, 1);
+}
+
 
 //____________________________________________________
 int E15190Reader::LoadNWPositionCalibration(const char * file_name, const char * WallToCalibrate)
@@ -310,6 +338,22 @@ int E15190Reader::LoadFATimePulseHeightCorrection(const char * file_name)
 }
 
 //____________________________________________________
+int E15190Reader::LoadVWGainMatchig(const char * file_name)
+{
+  if(!fIsVW) return 0;
+  int NLines=fVWPulseHeightCalibrationTools->LoadGainMatching(file_name);
+  if(NLines>0) {
+    fVWGainMatched=true;
+    printf("Loaded gain matching FA %s\n", file_name);
+    return NLines;
+  } else {
+    fVWGainMatched=false;
+    printf("Error: Error while loading FA gain matching %s\n", file_name);
+    return -1;
+  }
+}
+
+//____________________________________________________
 double E15190Reader::GetNWAXcm(int num_bar, double tleft, double tright) const
 {
   return fNWAPositionCalibrated ? fNWAPositionCalibration->GetPosition(num_bar, tleft, tright) : -9999;
@@ -463,6 +507,12 @@ double E15190Reader::GetNWBRightMatched(double ch, int num_bar) const
 double E15190Reader::GetFATimePulseHeightCorrection(int num_det, double pulse_height) const
 {
   return fFATimeCalibrated ? fFATimeCalibration->GetTimePulseHeightCorrection(num_det, pulse_height) : 0;
+}
+
+//____________________________________________________
+double E15190Reader::GetVWGeoMeanMatched(double ch, int num_bar) const
+{
+  return fVWGainMatched ? fVWPulseHeightCalibrationTools->GetGeoMeanMatched(ch, num_bar) : -9999;
 }
 
 //____________________________________________________

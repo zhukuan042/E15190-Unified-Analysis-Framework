@@ -50,33 +50,13 @@ int main (int argc, char ** argv)
     HTRunInfo * CurrRunInfo = ExpInfo->GetRunInfo(cur_run);
 
     //Loading calibration files //////////
-    E15190Analyzer.LoadNWPositionCalibration(CurrRunInfo->GetNWBPositionCalibrationFileName(), "NWB");
-    E15190Analyzer.LoadNWPositionCalibration(CurrRunInfo->GetNWAPositionCalibrationFileName(), "NWA");
-    E15190Analyzer.LoadNWGeometryFiducialPoints(CurrRunInfo->GetNWBGeometryCalibrationFileName(), "NWB");
-    E15190Analyzer.LoadNWTimeCalibration(CurrRunInfo->GetNWBTimeOffsetCalibrationFileName(), "NWB");
-    E15190Analyzer.LoadNWPulseHeightMatching(CurrRunInfo->GetNWBGainMatchingCalibrationFileName(), "NWB");
-    E15190Analyzer.LoadNWPulseHeightMatching(CurrRunInfo->GetNWAGainMatchingCalibrationFileName(), "NWA");
-    E15190Analyzer.LoadFATimeCalibration(CurrRunInfo->GetFATimeCalibrationFileName());
-    E15190Analyzer.LoadFATimePulseHeightCorrection(CurrRunInfo->GetFAPulseHeightCorrectionFileName());
-    E15190Analyzer.LoadMBGeometry(CurrRunInfo->GetMBGeometryFileName());
-    E15190Analyzer.LoadMBDetectorStatus(CurrRunInfo->GerMBDetectorStatusFileName());
-    E15190Analyzer.LoadMBFastSlowHitCondition(CurrRunInfo->GetMBHitConditionFileName());
-    E15190Analyzer.LoadMBCentrality(CurrRunInfo->GetMBImpactParameterFileName());
-    E15190Analyzer.LoadHiRAGeometry(CurrRunInfo->GetHiRAGeometryFileName());
-    E15190Analyzer.LoadHiRASiCalibration(CurrRunInfo->GetHiRASiEnergyCalibrationFileName());
-    E15190Analyzer.LoadHiRAStripBad(CurrRunInfo->GetHiRADetectorStatusFileName());
-    E15190Analyzer.LoadHiRACsIPulserInfo(CurrRunInfo->GetHiRACsIPulserFileName());
-    E15190Analyzer.LoadHiRASiHiLowMatching(CurrRunInfo->GetHiRASiHiLowMatchingFileName());
-    E15190Analyzer.LoadHiRACsICalibration(CurrRunInfo->GetNWBGeometryCalibrationFileName(), 1, 1);
-
+    //These are loaded for the current run
+    E15190Analyzer.InitAllCalibrations(CurrRunInfo);
 
     //Definition of the output file //////
-
     std::string FileOutName(Form("output/output_%04d.root", cur_run));
 
-
     //Run the required method(s) /////////
-
     E15190Analyzer.Loop(FileOutName.c_str(), evt_amount);
 
   }

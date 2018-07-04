@@ -44,6 +44,7 @@ public:
   void SetNWBGeometryCalibrationFile(const char * file_name) {fNWBGeometryFileName.assign(file_name);}
   void SetFATimeCalibrationFile(const char * file_name) {fFATimeCalibrationFileName.assign(file_name);}
   void SetFAPulseHeightCorrectionFile(const char * file_name) {fFAPulseHeightCorrectionFileName.assign(file_name);}
+  void SetVWGainMatchingCalibrationFile(const char * file_name) {fVWGainMatchingCalibrationFileName.assign(file_name);}
   void SetMBDetectorStatusFile(const char * file_name) {fMBDetectorStatusFileName.assign(file_name);}
   void SetMBGeometryFile(const char * file_name) {fMBGeometryFileName.assign(file_name);}
   void SetMBImpactParameterFile(const char * file_name) {fMBImpactParameterFileName.assign(file_name);}
@@ -64,6 +65,7 @@ public:
   const char * GetNWBGeometryCalibrationFileName() const {return fNWBGeometryFileName.c_str();}
   const char * GetFATimeCalibrationFileName() const {return fFATimeCalibrationFileName.c_str();}
   const char * GetFAPulseHeightCorrectionFileName() const {return fFAPulseHeightCorrectionFileName.c_str();}
+  const char * GetVWGainMatchingCalibrationFileName() const {return fVWGainMatchingCalibrationFileName.c_str();}
   const char * GerMBDetectorStatusFileName() const {return fMBDetectorStatusFileName.c_str();}
   const char * GetMBGeometryFileName() const {return fMBGeometryFileName.c_str();}
   const char * GetMBImpactParameterFileName() const {return fMBImpactParameterFileName.c_str();}
@@ -102,6 +104,7 @@ private:
   std::string  fNWBGeometryFileName;
   std::string  fFATimeCalibrationFileName;
   std::string  fFAPulseHeightCorrectionFileName;
+  std::string  fVWGainMatchingCalibrationFileName;
   std::string  fMBDetectorStatusFileName;
   std::string  fMBGeometryFileName;
   std::string  fMBImpactParameterFileName;
