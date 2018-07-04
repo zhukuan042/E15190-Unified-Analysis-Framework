@@ -53,6 +53,28 @@ private:
   std::string * fRunEvtFilePath;
   std::string * fRunTitle;
 
+  //E15190-Analysis-Framework data members
+  std::string * fNWAPositionCalibrationFileName;
+  std::string * fNWBPositionCalibrationFileName;
+  std::string * fNWATimeOffsetCalibrationFileName;
+  std::string * fNWBTimeOffsetCalibrationFileName;
+  std::string * fNWAGainMatchingCalibrationFileName;
+  std::string * fNWBGainMatchingCalibrationFileName;
+  std::string * fNWAGeometryFileName;
+  std::string * fNWBGeometryFileName;
+  std::string * fFATimeCalibrationFileName;
+  std::string * fFAPulseHeightCorrectionFileName;
+  std::string * fMBDetectorStatusFileName;
+  std::string * fMBGeometryFileName;
+  std::string * fMBImpactParameterFileName;
+  std::string * fMBHitConditionFileName;
+  std::string * fHiRASiEnergyCalibrationFileName;
+  std::string * fHiRACsIEnergyCalibrationFileName;
+  std::string * fHiRACsIPulserFileName;
+  std::string * fHiRADetectorStatusFileName;
+  std::string * fHiRASiHiLowMatchingFileName;
+  std::string * fHiRAGeometryFileName;
+
   bool fDataMerged;
   std::string fExperimentName;
   std::string fExperimentTitle;

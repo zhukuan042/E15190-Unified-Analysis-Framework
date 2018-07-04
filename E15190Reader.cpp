@@ -71,7 +71,7 @@ fHiRAStatus(new HiRADetectorStatus(NUM_TEL,NUM_STRIP_F,NUM_STRIP_B))
     if(DetectorToAdd.compare("NWB")==0) fIsNWB=true;
     if(DetectorToAdd.compare("FA")==0) fIsFA=true;
     if(DetectorToAdd.compare("VW")==0) fIsVW=true;
-    if(DetectorToAdd.compare("MB")==0) fIsMB=true;
+    if(DetectorToAdd.compare("uBall")==0) fIsMB=true;
     if(DetectorToAdd.compare("HiRA")==0) fIsHiRA=true;
   }
 

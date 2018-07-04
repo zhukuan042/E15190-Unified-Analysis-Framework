@@ -8,6 +8,9 @@
 #include <TH2.h>
 #include <iostream>
 
+#include <HTExperimentInfo.h>
+#include <HTRunInfo.h>
+
 int main (int argc, char ** argv)
 {
   if(argc<=1) return -1;
@@ -24,6 +27,11 @@ int main (int argc, char ** argv)
     std::string last_run_name(argv[2]);
     last_run = atoi(last_run_name.c_str());
   }
+
+  // Building Epxeriment Info class
+  HTExperimentInfo * ExpInfo = new HTExperimentInfo();
+  ExpInfo->InitClass("config/HiRAEVT.conf");
+
   // Run by Run loop ////////////////////////
   for(int cur_run=first_run; cur_run<=last_run; cur_run++)
   {
@@ -39,28 +47,28 @@ int main (int argc, char ** argv)
 
     E15190Reader E15190Analyzer(dataChain, "NWB NWA VW FA");
 
+    //Building HTRunInfo class ///////////
+    HTRunInfo * CurrRunInfo = ExpInfo->GetRunInfo(cur_run);
+
     //Loading calibration files //////////
-    E15190Analyzer.LoadNWPositionCalibration("calibrations/NWB_Position_Calibration_run3014.dat", "NWB");
-    E15190Analyzer.LoadNWPositionCalibration("calibrations/NWA_Position_Calibration_run3014.dat", "NWA");
-    E15190Analyzer.LoadNWGeometryFiducialPoints("calibrations/NWB_Geometry.dat", "NWB");
-    E15190Analyzer.LoadNWTimeCalibration("calibrations/NWB_Time_Offset_run3013.dat", "NWB");
-    E15190Analyzer.LoadNWPulseHeightMatching("calibrations/NWB_GainMatching_Co60.dat", "NWB");
-    E15190Analyzer.LoadNWPulseHeightMatching("calibrations/NWA_GainMatching_Co60.dat", "NWA");
-    E15190Analyzer.LoadFATimeCalibration("calibrations/FA_Time_Offset_run4557.dat");
-    //E15190Analyzer.LoadFATimeCalibration("calibrations/FA_Time_Offset_run2523.dat");
-    E15190Analyzer.LoadFATimePulseHeightCorrection("calibrations/FA_PulseHeightCorrection_run4543.dat");
-    //E15190Analyzer.LoadFATimePulseHeightCorrection("calibrations/FA_PulseHeightCorrection_run2523.dat");
-    E15190Analyzer.LoadMBGeometry("calibrations/MB_Geometry.dat");
-    E15190Analyzer.LoadMBDetectorStatus("calibrations/MB_BadOrMissingDetectors.dat");
-    E15190Analyzer.LoadMBFastSlowHitCondition("calibrations/MB_FastSlowCuts_2626.root");
-    E15190Analyzer.LoadMBCentrality("calibrations/MB_ImpactParameter_48Ca_64Ni_140AMeV.dat");
-    E15190Analyzer.LoadHiRAGeometry("calibrations/PixelLocation_RomerArm.dat");
-    E15190Analyzer.LoadHiRASiCalibration("calibrations/HiRA_Si_Calibration_run4761.dat");
-    //E15190Analyzer.LoadHiRASiCalibration("calibrations/HiRA_Si_Calibration_run2873.dat");
-    E15190Analyzer.LoadHiRAStripBad("calibrations/HiRA_StripBad.dat");
-    E15190Analyzer.LoadHiRACsIPulserInfo("calibrations/HiRA_CsI_Pulser_170setting.dat");
-    //E15190Analyzer.LoadHiRACsIPulserInfo("calibrations/HiRA_CsI_Pulser_200setting.dat");
-    E15190Analyzer.LoadHiRACsICalibration("calibrations/HiRA_CsI_LightVsEnergy_Z01_A01.dat", 1, 1);
+    E15190Analyzer.LoadNWPositionCalibration(CurrRunInfo->GetNWBPositionCalibrationFileName(), "NWB");
+    E15190Analyzer.LoadNWPositionCalibration(CurrRunInfo->GetNWAPositionCalibrationFileName(), "NWA");
+    E15190Analyzer.LoadNWGeometryFiducialPoints(CurrRunInfo->GetNWBGeometryCalibrationFileName(), "NWB");
+    E15190Analyzer.LoadNWTimeCalibration(CurrRunInfo->GetNWBTimeOffsetCalibrationFileName(), "NWB");
+    E15190Analyzer.LoadNWPulseHeightMatching(CurrRunInfo->GetNWBGainMatchingCalibrationFileName(), "NWB");
+    E15190Analyzer.LoadNWPulseHeightMatching(CurrRunInfo->GetNWAGainMatchingCalibrationFileName(), "NWA");
+    E15190Analyzer.LoadFATimeCalibration(CurrRunInfo->GetFATimeCalibrationFileName());
+    E15190Analyzer.LoadFATimePulseHeightCorrection(CurrRunInfo->GetFAPulseHeightCorrectionFileName());
+    E15190Analyzer.LoadMBGeometry(CurrRunInfo->GetMBGeometryFileName());
+    E15190Analyzer.LoadMBDetectorStatus(CurrRunInfo->GerMBDetectorStatusFileName());
+    E15190Analyzer.LoadMBFastSlowHitCondition(CurrRunInfo->GetMBHitConditionFileName());
+    E15190Analyzer.LoadMBCentrality(CurrRunInfo->GetMBImpactParameterFileName());
+    E15190Analyzer.LoadHiRAGeometry(CurrRunInfo->GetHiRAGeometryFileName());
+    E15190Analyzer.LoadHiRASiCalibration(CurrRunInfo->GetHiRASiEnergyCalibrationFileName());
+    E15190Analyzer.LoadHiRAStripBad(CurrRunInfo->GetHiRADetectorStatusFileName());
+    E15190Analyzer.LoadHiRACsIPulserInfo(CurrRunInfo->GetHiRACsIPulserFileName());
+    E15190Analyzer.LoadHiRASiHiLowMatching(CurrRunInfo->GetHiRASiHiLowMatchingFileName());
+    E15190Analyzer.LoadHiRACsICalibration(CurrRunInfo->GetNWBGeometryCalibrationFileName(), 1, 1);
 
 
     //Definition of the output file //////

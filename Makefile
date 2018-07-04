@@ -19,9 +19,10 @@ OBJS += HTMicroballRootEvent.$(ObjSuf) MBCalibratedRootEvent.$(ObjSuf)
 OBJS += MBDetectorStatus.$(ObjSuf) MBGeometry.$(ObjSuf) MBHitCondition.$(ObjSuf) MBImpactParameter.$(ObjSuf)
 OBJS += EnergyLossModule.$(ObjSuf) nuclear_masses.$(ObjSuf) HiRACsICalibration.$(ObjSuf) HiRASiCalibration.$(ObjSuf) HTHiRARootEvent.$(ObjSuf) HiRADetectorStatus.$(ObjSuf) HiRAGeometry.$(ObjSuf)
 OBJS += HiRACalibratedRootEvent.$(ObjSuf)
+OBJS += HTRunInfo.$(ObjSuf) HTDAQStackInfo.$(ObjSuf) HTExperimentInfo.$(ObjSuf) HTModuleInfo.$(ObjSuf)
 OBJS := $(addprefix $(ObjDir), $(OBJS))
 
-RLIBS := -L./$(LibDir) -lHTRunInfo
+RLIBS := -L./$(LibDir)
 
 DEPS := $(_OBJS:.$(ObjSuf)=.$(DepSuf))
 

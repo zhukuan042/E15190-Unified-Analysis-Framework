@@ -10,21 +10,33 @@ fLastRun(0)
 //________________________________________________
 HTExperimentInfo::~HTExperimentInfo()
 {
-  if(fDAQConfigurationFileName) {
-    delete [] fDAQConfigurationFileName;
-  }
-  if(fPedestalFileName) {
-    delete [] fPedestalFileName;
-  }
-  if(fMappingFileName) {
-    delete [] fMappingFileName;
-  }
-  if(fRunEvtFilePath) {
-    delete [] fRunEvtFilePath;
-  }
-  if(fRunTitle) {
-    delete [] fRunTitle;
-  }
+  if(fDAQConfigurationFileName) delete [] fDAQConfigurationFileName;
+  if(fPedestalFileName) delete [] fPedestalFileName;
+  if(fMappingFileName) delete [] fMappingFileName;
+  if(fRunEvtFilePath) delete [] fRunEvtFilePath;
+  if(fRunTitle) delete [] fRunTitle;
+
+  //E15190-Analysis-Framework data
+  if(fNWAPositionCalibrationFileName) delete [] fNWAPositionCalibrationFileName;
+  if(fNWBPositionCalibrationFileName) delete [] fNWBPositionCalibrationFileName;
+  if(fNWATimeOffsetCalibrationFileName) delete [] fNWATimeOffsetCalibrationFileName;
+  if(fNWBTimeOffsetCalibrationFileName) delete [] fNWBTimeOffsetCalibrationFileName;
+  if(fNWAGainMatchingCalibrationFileName) delete [] fNWAGainMatchingCalibrationFileName;
+  if(fNWBGainMatchingCalibrationFileName) delete [] fNWBGainMatchingCalibrationFileName;
+  if(fNWAGeometryFileName) delete [] fNWAGeometryFileName;
+  if(fNWBGeometryFileName) delete [] fNWBGeometryFileName;
+  if(fFATimeCalibrationFileName) delete [] fFATimeCalibrationFileName;
+  if(fFAPulseHeightCorrectionFileName) delete [] fFAPulseHeightCorrectionFileName;
+  if(fMBDetectorStatusFileName) delete [] fMBDetectorStatusFileName;
+  if(fMBGeometryFileName) delete [] fMBGeometryFileName;
+  if(fMBImpactParameterFileName) delete [] fMBImpactParameterFileName;
+  if(fMBHitConditionFileName) delete [] fMBHitConditionFileName;
+  if(fHiRASiEnergyCalibrationFileName) delete [] fHiRASiEnergyCalibrationFileName;
+  if(fHiRACsIEnergyCalibrationFileName) delete [] fHiRACsIEnergyCalibrationFileName;
+  if(fHiRACsIPulserFileName) delete [] fHiRACsIPulserFileName;
+  if(fHiRADetectorStatusFileName) delete [] fHiRADetectorStatusFileName;
+  if(fHiRASiHiLowMatchingFileName) delete [] fHiRASiHiLowMatchingFileName;
+  if(fHiRAGeometryFileName) delete [] fHiRAGeometryFileName;
 }
 
 //________________________________________________
@@ -51,6 +63,28 @@ int HTExperimentInfo::InitClass(const char *file_name)
   fMappingFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fRunEvtFilePath=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fRunTitle=(std::string*)new std::string[fLastRun-fFirstRun+1];
+
+  //E15190-Analysis-Framework data
+  fNWAPositionCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWBPositionCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWATimeOffsetCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWBTimeOffsetCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWAGainMatchingCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWBGainMatchingCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWAGeometryFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWBGeometryFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fFATimeCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fFAPulseHeightCorrectionFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fMBDetectorStatusFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fMBGeometryFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fMBImpactParameterFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fMBHitConditionFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fHiRASiEnergyCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fHiRACsIEnergyCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fHiRACsIPulserFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fHiRADetectorStatusFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fHiRASiHiLowMatchingFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fHiRAGeometryFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
 
   // Retrieving all previously stored run titles from database file
   RetrieveRunTitlesFromDatabaseFile();
@@ -164,6 +198,28 @@ HTRunInfo * HTExperimentInfo::GetRunInfo(int run_num) const
     newRunInfo->SetEvtFilePath(fEvtFilePath.c_str());
   }
 
+  //E15190-Analysis-Framework paths
+  newRunInfo->SetNWAPositionCalibrationFile(     fNWAPositionCalibrationFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWBPositionCalibrationFile(	 fNWBPositionCalibrationFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWATimeOffsetCalibrationFile(	 fNWATimeOffsetCalibrationFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWBTimeOffsetCalibrationFile(	 fNWBTimeOffsetCalibrationFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWAGainMatchingCalibrationFile( fNWAGainMatchingCalibrationFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWBGainMatchingCalibrationFile( fNWBGainMatchingCalibrationFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWAGeometryCalibrationFile(	 fNWAGeometryFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWBGeometryCalibrationFile(	 fNWBGeometryFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetFATimeCalibrationFile( 	 fFATimeCalibrationFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetFAPulseHeightCorrectionFile(	 fFAPulseHeightCorrectionFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetMBDetectorStatusFile(		 fMBDetectorStatusFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetMBGeometryFile(		 fMBGeometryFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetMBImpactParameterFile( 	 fMBImpactParameterFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetMBHitConditionFile(		 fMBHitConditionFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetHiRASiEnergyCalibrationFile(	 fHiRASiEnergyCalibrationFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetHiRACsIEnergyCalibrationFile(	 fHiRACsIEnergyCalibrationFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetHiRACsIPulserFile(		 fHiRACsIPulserFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetHiRADetectorStatusFile(	 fHiRADetectorStatusFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetHiRASiHiLowMatchingFile(	 fHiRASiHiLowMatchingFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetHiRAGeometryFile(		 fHiRAGeometryFileName[run_num-fFirstRun].c_str());
+
   return newRunInfo;
 }
 
@@ -211,26 +267,42 @@ void HTExperimentInfo::ParseSetConfigLineRunInfo(const char *line_to_parse, int 
   std::string ValueToSet;
   LineStream>>ValueToSet;
   std::string NewValue;
+  std::string Option;
+  bool RunFound=false;
 
   //NOTE: for a future improvement take into account more possible options not only --run and --exclude
-  if(LineToParse.find("--run")!=std::string::npos) { //found --run option
-    LineToParse.assign(LineToParse.substr(LineToParse.find("--run")+5));
-    int StartRunNum=atoi(LineToParse.substr(LineToParse.find("=")+1,LineToParse.find("-")).c_str());
-    int StopRunNum=atoi(LineToParse.substr(LineToParse.find("-")+1,LineToParse.find("\"")-LineToParse.find("-")).c_str());
-
-    if(LineToParse.find("--exclude")!=std::string::npos) { //found --exclude option
-      LineToParse.assign(LineToParse.substr(LineToParse.find("--exclude")+10));
-      std::istringstream LineExcludeStream(LineToParse.substr(0,LineToParse.find("--")!=std::string::npos ? LineToParse.find("--") : LineToParse.find("\"")));
-      std::string RunToExclude;
-
-      while(std::getline(LineExcludeStream, RunToExclude, ',')) {
-        if(run_num==std::stoi(RunToExclude)) return; //this run is excluded
+  //A --run option can contain or "," or "-" as a separator, not combination of both
+  // Loop on the option strings, every time one finds -- this is an option string, e.g. --run, --exclude
+  while(LineStream>>Option && Option.find("--")!=std::string::npos) {
+    if(Option.find("--run=")!=std::string::npos) {
+      Option.assign(Option.substr(Option.find("--run=")+6));
+      std::istringstream LineRunStream(Option);
+      if(Option.find(",")!=std::string::npos) {
+        std::string RunToInclude;
+        while(std::getline(LineRunStream, RunToInclude, ',')) {
+          if(run_num==std::stoi(RunToInclude)) RunFound=true;
+        }
+      }
+      if(Option.find("-")!=std::string::npos) {
+        std::string StartRun;
+        std::string StopRun;
+        std::getline(LineRunStream, StartRun, '-');
+        std::getline(LineRunStream, StopRun, '-');
+        int StartRunNum=std::stoi(StartRun);
+        int StopRunNum=std::stoi(StopRun);
+        if(run_num>=StartRunNum && run_num<=StopRunNum) RunFound=true;;
+      }
+    } else if (Option.find("--exclude=")!=std::string::npos) {
+        std::istringstream LineExcludeStream(Option.substr(Option.find("--exclude=")+10));
+        std::string RunToExclude;
+        while(std::getline(LineExcludeStream, RunToExclude, ',')) {
+          if(run_num==std::stoi(RunToExclude)) return; //this run is excluded
+        }
       }
     }
 
-    if(run_num>=StartRunNum && run_num<=StopRunNum) {
-      NewValue.assign(LineToParse.substr(LineToParse.find("\"")+1,LineToParse.find_last_of("\"")-(LineToParse.find("\"")+1)));
-    } else return;
+  if(RunFound) {
+    NewValue.assign(LineToParse.substr(LineToParse.find("\"")+1,LineToParse.find_last_of("\"")-(LineToParse.find("\"")+1)));
   } else return;
 
   // if I'm here so run_num has been found in the configuration line
@@ -242,6 +314,49 @@ void HTExperimentInfo::ParseSetConfigLineRunInfo(const char *line_to_parse, int 
     fMappingFileName[run_num-fFirstRun].assign(NewValue);
   } else if (ValueToSet.compare("EVENT_FILE_PATH")==0) {
     fRunEvtFilePath[run_num-fFirstRun].assign(NewValue);
+  }
+
+  // E15190-Analysis-Framework data
+  else if (ValueToSet.compare("NWA_POSITION_CALIBRATION")==0) {
+    fNWAPositionCalibrationFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWB_POSITION_CALIBRATION")==0) {
+    fNWBPositionCalibrationFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWA_TIMEOFFSET_CALIBRATION")==0) {
+    fNWATimeOffsetCalibrationFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWB_TIMEOFFSET_CALIBRATION")==0) {
+    fNWBTimeOffsetCalibrationFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWA_GAIN_MATCHING_CALIBRATION")==0) {
+    fNWAGainMatchingCalibrationFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWB_GAIN_MATCHING_CALIBRATION")==0) {
+    fNWBGainMatchingCalibrationFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWA_GEOMETRY")==0) {
+    fNWAGeometryFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWB_GEOMETRY")==0) {
+    fNWBGeometryFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("FA_TIME_CALIBRATION")==0) {
+    fFATimeCalibrationFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("FA_PULSE_HEIGHT_CORRECTION")==0) {
+    fFAPulseHeightCorrectionFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("MB_DETECTOR_STATUS")==0) {
+    fMBDetectorStatusFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("MB_GEOMETRY")==0) {
+    fMBGeometryFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("MB_IMPACT_PARAMETER")==0) {
+    fMBImpactParameterFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("MB_HIT_CONDITION")==0) {
+    fMBHitConditionFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("HIRA_SI_ENERGY_CALIBRATION")==0) {
+    fHiRASiEnergyCalibrationFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("HIRA_CSI_ENERGY_CALIBRATION")==0) {
+    fHiRACsIEnergyCalibrationFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("HIRA_CSI_PULSER_CALIBRATION")==0) {
+    fHiRACsIPulserFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("HIRA_DETECTOR_STATUS")==0) {
+    fHiRADetectorStatusFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("HIRA_SI_HILOWGAIN")==0) {
+    fHiRASiHiLowMatchingFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("HIRA_GEOMETRY")==0) {
+    fHiRAGeometryFileName[run_num-fFirstRun].assign(NewValue);
   }
 
   return;
