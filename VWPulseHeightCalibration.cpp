@@ -38,7 +38,7 @@ int VWPulseHeightCalibration::LoadGainMatching(const char * file_name)
 
     LineStream >> numbar >> fraction;
 
-    fGeoMeanScalingFactors[numbar];
+    fGeoMeanScalingFactors[numbar]=fraction;
 
     NRead++;
   }

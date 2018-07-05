@@ -344,11 +344,11 @@ int E15190Reader::LoadVWGainMatchig(const char * file_name)
   int NLines=fVWPulseHeightCalibrationTools->LoadGainMatching(file_name);
   if(NLines>0) {
     fVWGainMatched=true;
-    printf("Loaded gain matching FA %s\n", file_name);
+    printf("Loaded VW gain matching %s\n", file_name);
     return NLines;
   } else {
     fVWGainMatched=false;
-    printf("Error: Error while loading FA gain matching %s\n", file_name);
+    printf("Error: Error while loading VW gain matching %s\n", file_name);
     return -1;
   }
 }

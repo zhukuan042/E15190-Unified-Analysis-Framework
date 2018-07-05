@@ -61,7 +61,7 @@ int main (int argc, char ** argv)
   }
   // End of the main loop //////////////////
 
-  printf("\nData Analyzed, Bye!\n");
+  printf("\nData Analyzed, produced %s file, Bye!\n", FileOutName.c_str());
 
   return 0;
 }

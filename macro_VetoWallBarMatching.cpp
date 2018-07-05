@@ -2,7 +2,7 @@
 
 void macro_VetoWallBarMatching()
 {
-  TFile * FileIn = new TFile("outputNW/UsefulHistograms_VetoWall_Merged_4427_4661.root");
+  TFile * FileIn = new TFile("outputNW/UsefulHistograms_VetoWall_Merged_4427_4661_NotCorrected.root");
 
   ofstream FileOut("calibrations/VW_GainMatchig_4427.dat");
   FileOut<<"*Veto Wall Gain matching parameters\n";
@@ -44,7 +44,7 @@ void macro_VetoWallBarMatching()
 
     TF1 * fitFunc = proj->GetFunction("gaus");
 
-    FileOut<<setw(10)<<i<<setw(20)<<fitFunc->GetParameter(1)<<endl;
+    FileOut<<setw(10)<<i<<setw(20)<<MatchingValue/fitFunc->GetParameter(1)<<endl;
 
   }
 
