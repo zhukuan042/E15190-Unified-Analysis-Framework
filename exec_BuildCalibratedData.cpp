@@ -60,9 +60,9 @@ int main (int argc, char ** argv)
     //Run the required method(s) /////////
     E15190Analyzer.BuildCalibratedTree(FileOutName.c_str(), evt_amount);
 
+    printf("\nproduced %s file\n", FileOutName.c_str());
   }
   // End of the main loop //////////////////
-
-  printf("\nData Analyzed, produced %s file, Bye!\n", FileOutName.c_str());
+  printf("\nData Analyzed, Bye!\n");
   return 0;
 }

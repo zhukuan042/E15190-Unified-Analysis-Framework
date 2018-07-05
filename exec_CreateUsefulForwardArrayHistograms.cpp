@@ -50,9 +50,10 @@ int main (int argc, char ** argv)
 
     E15190Analyzer.CreateUsefulForwardArrayHistograms(FileOutName.c_str(), evt_amount);
 
+    printf("\nproduced %s file\n", FileOutName.c_str());
   }
   // End of the main loop //////////////////
+  printf("\nData Analyzed, Bye!\n");
 
-  printf("\nData Analyzed, produced %s file, Bye!\n", FileOutName.c_str());
   return 0;
 }
