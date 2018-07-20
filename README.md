@@ -33,7 +33,7 @@ Table of contents
 ### Using git
 The latest version of the code can be obtained by using the git command. This is possible after installing git on a linux machine (see https://git-scm.com/download/linux for further documentation on how to install git). Use the following command to download the framework:
 ````
-$ git clone https://github.com/dellaquilamaster/HiRAEVT.git
+$ git clone https://github.com/nscl-hira/E15190-Unified-Analysis-Framework.git
 ````
 ### Downloading from Git Hub
 The code can be downloaded also frm the Git Hub web page at the link: https://github.com/dellaquilamaster/HiRAEVT, by
@@ -45,7 +45,8 @@ In order to compile and run the code ROOT 6 is required (the program has been te
 ### Compile the code
 To compile the code by using gcc compiler use the command:
 ````
-$ make -jN install
+$ make -jN
+$ make install
 ````
 where, in multi-cpu machines, N can be used to specify the number of core to use in the compilation and significantly speed up the procedure.
 To proceed with a clean compilation run before the command:
