@@ -27,7 +27,7 @@ Table of contents
   * [How to add new features](#how-to-add-new-features)
   * [Extension to future experiments](#extension-to-future-experiments)
   * [Notes for Developers](#notes-for-developers)
-  * [Example 1 Generating calibrated data](#example-1:-Generating-calibrated-data)
+  * [Example 1 Generating calibrated data](#example-1-Generating-calibrated-data)
   * [Example 2: Loop on raw data](#example-2:-Loop-on-raw-data)
   * [Example 3: Loop on calibrated data](#example-3:-Loop-on-calibrated-data)
 <!--te-->
