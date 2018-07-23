@@ -1,4 +1,20 @@
-#include "include/shared.h"
+#include <shared.h>
+
+const double gSpeedOfLight=2.99792458E+8;
+
+#ifdef PIXELIZATION_DEBUG
+long unsigned int DEBUG_PIXELIZATION_NUM_HIRA_EVENTS=0;
+long unsigned int DEBUG_PIXELIZATION_NUM_FRONT=0;
+long unsigned int DEBUG_PIXELIZATION_NUM_BACK=0;
+long unsigned int DEBUG_PIXELIZATION_NUM_CSI=0;
+long unsigned int DEBUG_PIXELIZATION_NUM_FRONT_BACK=0;
+long unsigned int DEBUG_PIXELIZATION_NUM_FRONT_BACK_CSI=0;
+long unsigned int DEBUG_PIXELIZATION_NUM_FRONT_CSI=0;
+long unsigned int DEBUG_PIXELIZATION_NUM_BACK_CSI=0;
+long unsigned int DEBUG_PIXELIZATION_NUM_PIXEL_NOCSI=0;
+long unsigned int DEBUG_PIXELIZATION_NUM_MULTIPLEPIXEL_CSI=0;
+long unsigned int DEBUG_PIXELIZATION_NUM_VALID_PIXELS=0;
+#endif
 
 const int NUM_BARS_NWA = 25;
 const int NUM_BARS_NWB =25;

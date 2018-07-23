@@ -45,7 +45,7 @@ int main (int argc, char ** argv)
 
     //Building framework /////////////////
 
-    E15190Reader E15190Analyzer(dataChain, "NWA NWB FA VW");
+    E15190Reader E15190Analyzer(dataChain, "HiRA");
 
     //Building HTRunInfo class ///////////
     HTRunInfo * CurrRunInfo = ExpInfo->GetRunInfo(cur_run);
@@ -55,7 +55,7 @@ int main (int argc, char ** argv)
     E15190Analyzer.InitAllCalibrations(CurrRunInfo);
 
     //Definition of the output file //////
-    std::string FileOutName(Form("outputNW/CalibratedData_%04d.root", cur_run));
+    std::string FileOutName(Form("outputNW/CalibratedData_HiRA_%04d.root", cur_run));
 
     //Run the required method(s) /////////
     E15190Analyzer.BuildCalibratedTree(FileOutName.c_str(), evt_amount);
@@ -64,5 +64,22 @@ int main (int argc, char ** argv)
   }
   // End of the main loop //////////////////
   printf("\nData Analyzed, Bye!\n");
+
+  //PIXELIZATION DEBUG QUANTITIES //////////
+  #ifdef PIXELIZATION_DEBUG
+  printf("Debug Pixelization Code\n");
+  printf("Tot Number of HiRA Events = %lu\n", DEBUG_PIXELIZATION_NUM_HIRA_EVENTS);
+  printf("HiRA Events with front && !back && !csi = %.2f %%\n", 100*double(DEBUG_PIXELIZATION_NUM_FRONT)/DEBUG_PIXELIZATION_NUM_HIRA_EVENTS);
+  printf("HiRA Events with !front && back && !csi = %.2f %%\n", 100*double(DEBUG_PIXELIZATION_NUM_BACK)/DEBUG_PIXELIZATION_NUM_HIRA_EVENTS);
+  printf("HiRA Events with !front && !back && csi = %.2f %%\n", 100*double(DEBUG_PIXELIZATION_NUM_CSI)/DEBUG_PIXELIZATION_NUM_HIRA_EVENTS);
+  printf("HiRA Events with front && back && !csi = %.2f %%\n", 100*double(DEBUG_PIXELIZATION_NUM_FRONT_BACK)/DEBUG_PIXELIZATION_NUM_HIRA_EVENTS);
+  printf("HiRA Events with front && back && csi = %.2f %%\n", 100*double(DEBUG_PIXELIZATION_NUM_FRONT_BACK_CSI)/DEBUG_PIXELIZATION_NUM_HIRA_EVENTS);
+  printf("HiRA Events with front && !back && csi = %.2f %%\n", 100*double(DEBUG_PIXELIZATION_NUM_FRONT_CSI)/DEBUG_PIXELIZATION_NUM_HIRA_EVENTS);
+  printf("HiRA Events with !front && back && csi = %.2f %%\n", 100*double(DEBUG_PIXELIZATION_NUM_BACK_CSI)/DEBUG_PIXELIZATION_NUM_HIRA_EVENTS);
+  printf("Num Pixels without CsI = %lu\n", DEBUG_PIXELIZATION_NUM_PIXEL_NOCSI);
+  printf("Num Multi-hit pixels within a CsI = %lu\n", DEBUG_PIXELIZATION_NUM_MULTIPLEPIXEL_CSI);
+  printf("Num Valid Pixels reconstructed = %lu\n", DEBUG_PIXELIZATION_NUM_VALID_PIXELS);
+  #endif
+
   return 0;
 }

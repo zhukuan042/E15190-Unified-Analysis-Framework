@@ -17,6 +17,9 @@ HTExperimentInfo::~HTExperimentInfo()
   if(fRunTitle) delete [] fRunTitle;
 
   //E15190-Analysis-Framework data
+  if(fBeam) delete [] fBeam;
+  if(fBeamEnergy) delete [] fBeamEnergy;
+  if(fTarget) delete [] fTarget;
   if(fNWAPositionCalibrationFileName) delete [] fNWAPositionCalibrationFileName;
   if(fNWBPositionCalibrationFileName) delete [] fNWBPositionCalibrationFileName;
   if(fNWATimeOffsetCalibrationFileName) delete [] fNWATimeOffsetCalibrationFileName;
@@ -38,6 +41,7 @@ HTExperimentInfo::~HTExperimentInfo()
   if(fHiRADetectorStatusFileName) delete [] fHiRADetectorStatusFileName;
   if(fHiRASiHiLowMatchingFileName) delete [] fHiRASiHiLowMatchingFileName;
   if(fHiRAGeometryFileName) delete [] fHiRAGeometryFileName;
+  if(fHiRAPIDFileName) delete [] fHiRAPIDFileName;
 }
 
 //________________________________________________
@@ -66,6 +70,9 @@ int HTExperimentInfo::InitClass(const char *file_name)
   fRunTitle=(std::string*)new std::string[fLastRun-fFirstRun+1];
 
   //E15190-Analysis-Framework data
+  fBeam=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fBeamEnergy=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fTarget=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fNWAPositionCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fNWBPositionCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fNWATimeOffsetCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
@@ -87,6 +94,7 @@ int HTExperimentInfo::InitClass(const char *file_name)
   fHiRADetectorStatusFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fHiRASiHiLowMatchingFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fHiRAGeometryFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fHiRAPIDFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
 
   // Retrieving all previously stored run titles from database file
   RetrieveRunTitlesFromDatabaseFile();
@@ -201,6 +209,9 @@ HTRunInfo * HTExperimentInfo::GetRunInfo(int run_num) const
   }
 
   //E15190-Analysis-Framework paths
+  newRunInfo->SetBeam(     fBeam[run_num-fFirstRun].c_str());
+  newRunInfo->SetBeamEnergy(     fBeamEnergy[run_num-fFirstRun].c_str());
+  newRunInfo->SetTarget(     fTarget[run_num-fFirstRun].c_str());
   newRunInfo->SetNWAPositionCalibrationFile(     fNWAPositionCalibrationFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetNWBPositionCalibrationFile(	 fNWBPositionCalibrationFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetNWATimeOffsetCalibrationFile(	 fNWATimeOffsetCalibrationFileName[run_num-fFirstRun].c_str());
@@ -222,6 +233,7 @@ HTRunInfo * HTExperimentInfo::GetRunInfo(int run_num) const
   newRunInfo->SetHiRADetectorStatusFile(	 fHiRADetectorStatusFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetHiRASiHiLowMatchingFile(	 fHiRASiHiLowMatchingFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetHiRAGeometryFile(		 fHiRAGeometryFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetHiRAPIDFile(		 fHiRAPIDFileName[run_num-fFirstRun].c_str());
 
   return newRunInfo;
 }
@@ -304,9 +316,9 @@ void HTExperimentInfo::ParseSetConfigLineRunInfo(const char *line_to_parse, int 
       }
     }
 
-  if(RunFound) {
+  if(ValueToSet.compare("EXPERIMENT_INFO")!=0 && RunFound) {
     NewValue.assign(LineToParse.substr(LineToParse.find("\"")+1,LineToParse.find_last_of("\"")-(LineToParse.find("\"")+1)));
-  } else return;
+  } else if(ValueToSet.compare("EXPERIMENT_INFO")!=0) return;
 
   // if I'm here so run_num has been found in the configuration line
   if(ValueToSet.compare("DAQ_CONFIG")==0) {
@@ -320,7 +332,25 @@ void HTExperimentInfo::ParseSetConfigLineRunInfo(const char *line_to_parse, int 
   }
 
   // E15190-Analysis-Framework data
-  else if (ValueToSet.compare("NWA_POSITION_CALIBRATION")==0) {
+  else if (ValueToSet.compare("EXPERIMENT_INFO")==0) {
+    std::string NewInfo;
+    std::string WhatToSet;
+    std::istringstream LineStreamExpInfo(LineToParse);
+    while(LineStreamExpInfo>>NewInfo) {
+      if(NewInfo.compare("EXPERIMENT_INFO")==0 || NewInfo.find("--run")!=std::string::npos) continue;
+      if(NewInfo.find("-")!=std::string::npos) {
+        WhatToSet.assign(NewInfo.substr(NewInfo.find("-")+1,NewInfo.find_last_of("=")-(NewInfo.find("-")+1)));
+        NewValue.assign(NewInfo.substr(NewInfo.find("\"")+1,NewInfo.find_last_of("\"")-(NewInfo.find("\"")+1)));
+        if(WhatToSet.compare("beam")==0) {
+          fBeam[run_num-fFirstRun].assign(NewValue);
+        } else if(WhatToSet.compare("energy")==0) {
+          fBeamEnergy[run_num-fFirstRun].assign(NewValue);
+        } else if(WhatToSet.compare("target")==0) {
+          fTarget[run_num-fFirstRun].assign(NewValue);
+        }
+      }
+    }
+  } else if (ValueToSet.compare("NWA_POSITION_CALIBRATION")==0) {
     fNWAPositionCalibrationFileName[run_num-fFirstRun].assign(NewValue);
   } else if (ValueToSet.compare("NWB_POSITION_CALIBRATION")==0) {
     fNWBPositionCalibrationFileName[run_num-fFirstRun].assign(NewValue);
@@ -362,6 +392,8 @@ void HTExperimentInfo::ParseSetConfigLineRunInfo(const char *line_to_parse, int 
     fHiRASiHiLowMatchingFileName[run_num-fFirstRun].assign(NewValue);
   } else if (ValueToSet.compare("HIRA_GEOMETRY")==0) {
     fHiRAGeometryFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("HIRA_PID")==0) {
+    fHiRAPIDFileName[run_num-fFirstRun].assign(NewValue);
   }
 
   return;

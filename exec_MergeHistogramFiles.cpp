@@ -39,10 +39,12 @@ int main (int argc, char ** argv)
         TClass *cl2 = gROOT->GetClass(key[i]->GetClassName());
         if (!cl2->InheritsFrom("TH1")) continue;
         TH1 *h2 = (TH1*)key[i]->ReadObj();
+	if(h2==0) continue;
 
         if(strcmp(h->GetName(),h2->GetName())==0) {
-          printf("Adding %s to %s\n",h->GetName(), h2->GetName());
+          printf("Adding %s to %s from file %s\n",h->GetName(), h2->GetName(), argv[i+1]);
           h->Add(h2);
+	  delete h2;
           break;
         }
       }

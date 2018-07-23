@@ -1,33 +1,37 @@
 #include "include/HiRACalibratedRootEvent.h"
 
 //________________________________________________
-HiRACalibratedData::HiRACalibratedData(int num_bars) :
+HiRACalibratedData::HiRACalibratedData(int num_max_particles) :
 fmulti(0)
 {
-  fnumtel=           new  Int_t    [fmulti];
-  fnumstripf=        new  Int_t    [fmulti];
-  fEnergySifHi=      new  UShort_t [fmulti];
-  fEnergySifLo=      new  UShort_t [fmulti];
-  fTimeSif=          new  UShort_t [fmulti];
-  fnumstripb=        new  Int_t    [fmulti];
-  fEnergySibHi=      new  UShort_t [fmulti];
-  fEnergySibLo=      new  UShort_t [fmulti];
-  fTimeSib=          new  UShort_t [fmulti];
-  fnumcsi=           new  Int_t    [fmulti];
-  fEnergycsi=        new  UShort_t [fmulti];
-  fTimecsi=          new  Double_t [fmulti];
+  fnumtel=           new  Int_t    [num_max_particles];
+  fnumstripf=        new  Int_t    [num_max_particles];
+  fEnergySifHi=      new  UShort_t [num_max_particles];
+  fEnergySifLo=      new  UShort_t [num_max_particles];
+  fTimeSif=          new  UShort_t [num_max_particles];
+  fnumstripb=        new  Int_t    [num_max_particles];
+  fEnergySibHi=      new  UShort_t [num_max_particles];
+  fEnergySibLo=      new  UShort_t [num_max_particles];
+  fTimeSib=          new  UShort_t [num_max_particles];
+  fnumcsi=           new  Int_t    [num_max_particles];
+  fEnergycsi=        new  UShort_t [num_max_particles];
+  fTimecsi=          new  Double_t [num_max_particles];
 
-  fEnergySifMatched= new  Double_t [fmulti];
-  fEnergySibMatched= new  Double_t [fmulti];
-  fEnergySifCal=     new  Double_t [fmulti];
-  fEnergySibCal=     new  Double_t [fmulti];
-  fEnergycsiCal=     new  Double_t [fmulti];
+  fEnergySifMatched= new  Double_t [num_max_particles];
+  fEnergySibMatched= new  Double_t [num_max_particles];
+  fEnergySifCal=     new  Double_t [num_max_particles];
+  fEnergySibCal=     new  Double_t [num_max_particles];
+  fEnergycsiCal=     new  Double_t [num_max_particles];
+  fEnergycsiCalProtons=     new  Double_t [num_max_particles];
 
-  fTheta=	           new  Double_t [fmulti];
-  fPhi= 	           new  Double_t [fmulti];
-  fZ=		             new  Int_t    [fmulti];
-  fA=		             new  Int_t    [fmulti];
-  fIdCode=	         new  Int_t    [fmulti];
+  fKinEnergy=	       new  Double_t [num_max_particles];
+  fBeta=	           new  Double_t [num_max_particles];
+  fMomentum=	       new  Double_t [num_max_particles];
+  fTheta=	           new  Double_t [num_max_particles];
+  fPhi= 	           new  Double_t [num_max_particles];
+  fZ=		             new  Int_t    [num_max_particles];
+  fA=		             new  Int_t    [num_max_particles];
+  fIdCode=	         new  Int_t    [num_max_particles];
 }
 
 //________________________________________________
@@ -52,7 +56,11 @@ fmulti(0)
   fEnergySifCal=     new  Double_t [12*NUM_MAX_PARTICLES_PER_TEL];
   fEnergySibCal=     new  Double_t [12*NUM_MAX_PARTICLES_PER_TEL];
   fEnergycsiCal=     new  Double_t [12*NUM_MAX_PARTICLES_PER_TEL];
+  fEnergycsiCalProtons=     new  Double_t [12*NUM_MAX_PARTICLES_PER_TEL];
 
+  fKinEnergy=	       new  Double_t [12*NUM_MAX_PARTICLES_PER_TEL];
+  fBeta=	           new  Double_t [12*NUM_MAX_PARTICLES_PER_TEL];
+  fMomentum=	       new  Double_t [12*NUM_MAX_PARTICLES_PER_TEL];
   fTheta=	           new  Double_t [12*NUM_MAX_PARTICLES_PER_TEL];
   fPhi= 	           new  Double_t [12*NUM_MAX_PARTICLES_PER_TEL];
   fZ=		             new  Int_t    [12*NUM_MAX_PARTICLES_PER_TEL];
@@ -81,10 +89,62 @@ HiRACalibratedData::~HiRACalibratedData()
   delete []  fEnergySifCal;
   delete []  fEnergySibCal;
   delete []  fEnergycsiCal;
+  delete []  fEnergycsiCalProtons;
 
+  delete []  fKinEnergy;
+  delete []  fBeta;
+  delete []  fMomentum;
   delete []  fTheta;
   delete []  fPhi;
   delete []  fZ;
   delete []  fA;
   delete []  fIdCode;
+}
+
+//________________________________________________
+HiRACalibratedBuffer::HiRACalibratedBuffer() :
+fmultistripf(0),
+fmultistripb(0),
+fmulticsi(0)
+{
+  fnumstripf=        new  Int_t    [NUM_STRIP_F];
+  fEnergySifHi=      new  UShort_t [NUM_STRIP_F];
+  fEnergySifLo=      new  UShort_t [NUM_STRIP_F];
+  fTimeSif=          new  UShort_t [NUM_STRIP_F];
+  fEnergySifMatched= new  Double_t [NUM_STRIP_F];
+  fEnergySifCal=     new  Double_t [NUM_STRIP_F];
+
+  fnumstripb=        new  Int_t    [NUM_STRIP_B];
+  fEnergySibHi=      new  UShort_t [NUM_STRIP_B];
+  fEnergySibLo=      new  UShort_t [NUM_STRIP_B];
+  fTimeSib=          new  UShort_t [NUM_STRIP_B];
+  fEnergySibMatched= new  Double_t [NUM_STRIP_B];
+  fEnergySibCal=     new  Double_t [NUM_STRIP_B];
+
+  fnumcsi=           new  Int_t    [NUM_CSI_TEL];
+  fEnergycsi=        new  UShort_t [NUM_CSI_TEL];
+  fTimecsi=          new  Double_t [NUM_CSI_TEL];
+  fEnergycsiCal=     new  Double_t [NUM_CSI_TEL];
+}
+
+//________________________________________________
+HiRACalibratedBuffer::~HiRACalibratedBuffer()
+{
+  delete []  fnumstripf;
+  delete []  fEnergySifHi;
+  delete []  fEnergySifLo;
+  delete []  fTimeSif ;
+  delete []  fnumstripb;
+  delete []  fEnergySibHi;
+  delete []  fEnergySibLo;
+  delete []  fTimeSib;
+  delete []  fnumcsi;
+  delete []  fEnergycsi;
+  delete []  fTimecsi;
+
+  delete []  fEnergySifMatched;
+  delete []  fEnergySibMatched;
+  delete []  fEnergySifCal;
+  delete []  fEnergySibCal;
+  delete []  fEnergycsiCal;
 }

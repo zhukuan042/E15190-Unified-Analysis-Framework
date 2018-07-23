@@ -1,4 +1,4 @@
-#include "include/HiRACsICalibration.h"
+#include <HiRACsICalibration.h>
 
 EnergyLossModule gLISEModule;
 
@@ -121,11 +121,24 @@ double HiRACsICalibrationManager::GetVoltageValue(double ch, int numtel, int num
   }
 }
 
+// CsI Calibrations are obtained with a different procedure depending on the isotope
+// according to the following cases:
+// *  Z=1 : A=1, A=2 and A=3 are calibrated by using a light corrected formula. Because of the time consuming calculation, this formula is computed
+//    only once at the beginning of the analysis process to create fiducial points that are then interpolated. This calibration starts from the CsI values in Volt.
+// *  Z=2 : A=3 and A=4 as a first approximation, these calibrations are here considered linear V -> MeV
+// *  Z=3 : A=6 and A=7
+// *  Z=4 : A=7
+//
 //______________________________________________
 double HiRACsICalibrationManager::GetEnergyValue(double ch, int numtel, int numcsi, int Z, int A) const
 {
   if(fCalib[Z][A][numtel*CSICALIB_NUM_CSI_TEL+numcsi]==0 || !fPulserLoaded) return -1;
-  return fCalib[Z][A][numtel*CSICALIB_NUM_CSI_TEL+numcsi]->GetEnergy(GetVoltageValue(ch,numtel,numcsi));
+  if(Z==1 || Z==2) { //Get Energy from Z=1 and Z=2 calibrations
+    return fCalib[Z][A][numtel*CSICALIB_NUM_CSI_TEL+numcsi]->GetEnergy(GetVoltageValue(ch,numtel,numcsi));
+  } else if (Z==3 || Z==4) { //Get Energy from Z=3 and Z=4 calibrations
+    return fCalib[1][1][numtel*CSICALIB_NUM_CSI_TEL+numcsi] ?
+    fCalib[Z][A][numtel*CSICALIB_NUM_CSI_TEL+numcsi]->GetEnergy(fCalib[1][1][numtel*CSICALIB_NUM_CSI_TEL+numcsi]->GetEnergy(GetVoltageValue(ch,numtel,numcsi))) : -1;
+  }
 }
 
 //______________________________________________
@@ -168,7 +181,7 @@ void HiRACsICalibrationManager::DrawChVoltage(int numtel, int numcsi) const
 }
 
 //______________________________________________
-int HiRACsICalibrationManager::LoadEnergyCalibration(const char * file_name, int Z, int A)
+int HiRACsICalibrationManager::LoadEnergyCalibration(const char * file_name)
 {
   std::ifstream FileIn(file_name);
   if(!FileIn.is_open()) {
@@ -187,12 +200,16 @@ int HiRACsICalibrationManager::LoadEnergyCalibration(const char * file_name, int
 
     std::istringstream LineStream(LineRead);
 
+    int Z;
+    int A;
     int numtel;
     int numcsi;
     double normalization;
     double gradient;
 
-    LineStream >> numtel >> numcsi >> normalization >> gradient;
+    LineStream >> Z >> A >> numtel >> numcsi >> normalization >> gradient;
+
+    if(Z>Z_MAX && A>A_MAX) continue;
 
     fCalib[Z][A][numtel*CSICALIB_NUM_CSI_TEL+numcsi]= new HiRACsICalibration(Z, A);
 
@@ -221,7 +238,9 @@ fParameters(0),
 fCalibrationFunc(0),
 fCalibrationInitialized(false),
 fZ(Z),
-fA(A)
+fA(A),
+fVtoEInterpolated(0),
+fVtoEExtrapolated(0)
 {
   fSimulationModule= new HiRACsISimulation();
 }
@@ -250,7 +269,7 @@ void HiRACsICalibration::SetParameter(int par_to_set, double value)
 void HiRACsICalibration::InitCalibration()
 {
   //protons, deuterons or tritons
-  if((fZ==1 && fA==1) || (fZ==1 && fA==2) || (fZ==1 && fA==3)) {
+  if((fZ==1 && fA==1) || (fZ==1 && fA==2) || (fZ==1 && fA==3)) {  //Calibration for Z=1
     int NPoints=100;
     for(int i=1; i<NPoints; i++)
     {
@@ -266,8 +285,11 @@ void HiRACsICalibration::InitCalibration()
     fCalibrationInitialized=true;
     fVtoEExtrapolated= new TGraph(fCsIRawV.size(), fCsIRawV.data(), fLISEEnergyMeV.data());
     fVtoEInterpolated = new TSpline3("VtoEInterpolated", fVtoEExtrapolated);
-  } else
-  {
+  } else if(fZ==2) {  //Calibration for Z=2
+    fCalibrationInitialized=true;
+    fCalibrationFunc = new TF1 ("fCalibrationFunc", "[0]+[1]*x", 0, 10);
+    fCalibrationFunc->SetParameters(fParameters);
+  } else {
     fCalibrationInitialized=false;
   }
 }
@@ -278,10 +300,14 @@ double HiRACsICalibration::GetEnergy(double V) const
   if(!fCalibrationInitialized) {
     return -1;
   }
-  if(V>=fVtoEInterpolated->GetXmin() && V<=fVtoEInterpolated->GetXmax()) {
-    return fVtoEInterpolated->Eval(V);
-  } else {
-    return fVtoEExtrapolated->Eval(V,0,"");
+  if(fZ==1) { //Get Energy for Z=1
+    if(V>=fVtoEInterpolated->GetXmin() && V<=fVtoEInterpolated->GetXmax()) {
+      return fVtoEInterpolated->Eval(V);
+    } else {
+      return fVtoEExtrapolated->Eval(V,0,"");
+    }
+  } else if(fZ==2) { //Get Energy for Z=2
+    fCalibrationFunc->Eval(V);
   }
 }
 

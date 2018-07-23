@@ -2,3 +2,7 @@
 *.out
 outputNW
 *.png
+slurm
+slurm/slurm.folder
+slurm/slurm.folder
+*.folder

@@ -57,11 +57,11 @@ int NWPulseHeightCalibration::LoadMatching(const char * file_name)
 //____________________________________________________
 double NWPulseHeightCalibration::GetLeftMatched(double ch, int numbar) const
 {
-  return fMatchingLoaded ? gRandom->Uniform(ch-0.5, ch+0.5)*fLeftMatchingParameters[numbar-1] : -9999;
+  return fMatchingLoaded ? gRandom->Uniform(ch-0.5, ch+0.5)*fLeftMatchingParameters[numbar] : -9999;
 }
 
 //____________________________________________________
 double NWPulseHeightCalibration::GetRightMatched(double ch, int numbar) const
 {
-  return fMatchingLoaded ? gRandom->Uniform(ch-0.5, ch+0.5)*fRightMatchingParameters[numbar-1] : -9999;
+  return fMatchingLoaded ? gRandom->Uniform(ch-0.5, ch+0.5)*fRightMatchingParameters[numbar] : -9999;
 }

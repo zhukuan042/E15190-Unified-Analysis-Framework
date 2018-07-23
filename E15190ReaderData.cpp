@@ -124,7 +124,89 @@ void E15190Reader::BuildCalibratedEvent()
   }
 
   if(fIsHiRA) {
+    //Analysis of the HiRA detector
+    fHiRACalibratedData.fmulti=0;
 
+    //Creation of a buffer of calibrated data for the event
+    for(int i=0; i<NUM_TEL; i++)
+    {
+      fHiRACalibratedDataBuffer.fmultistripf=0;
+      fHiRACalibratedDataBuffer.fmultistripb=0;
+      fHiRACalibratedDataBuffer.fmulticsi=0;
+      HTHiRAData * HiRA = fHiRA[i]->Get();
+      for(int j=0; j<HiRA->fEF.fmulti; j++) {
+        if(IsStripfBad(i,HiRA->fEF.fnumstrip[j])) continue;
+        fHiRACalibratedDataBuffer.fnumstripf[fHiRACalibratedDataBuffer.fmultistripf]=HiRA->fEF.fnumstrip[j];
+        fHiRACalibratedDataBuffer.fEnergySifHi[fHiRACalibratedDataBuffer.fmultistripf]=HiRA->fEF.fEnergyHi[j];
+        fHiRACalibratedDataBuffer.fEnergySifLo[fHiRACalibratedDataBuffer.fmultistripf]=HiRA->fEF.fEnergyLo[j];
+        fHiRACalibratedDataBuffer.fTimeSif[fHiRACalibratedDataBuffer.fmultistripf]=HiRA->fEF.fTime[j];
+        fHiRACalibratedDataBuffer.fEnergySifMatched[fHiRACalibratedDataBuffer.fmultistripf]=GetSifHiLowMatched(HiRA->fEF.fEnergyHi[j], HiRA->fEF.fEnergyLo[j], i, HiRA->fEF.fnumstrip[j]);
+        fHiRACalibratedDataBuffer.fEnergySifCal[fHiRACalibratedDataBuffer.fmultistripf]=GetSifHiLowMatchedEMeV(HiRA->fEF.fEnergyHi[j], HiRA->fEF.fEnergyLo[j], i, HiRA->fEF.fnumstrip[j]);
+        fHiRACalibratedDataBuffer.fmultistripf++;
+      }
+      for(int j=0; j<HiRA->fEB.fmulti; j++) {
+        if(IsStripbBad(i,HiRA->fEB.fnumstrip[j])) continue;
+        fHiRACalibratedDataBuffer.fnumstripb[fHiRACalibratedDataBuffer.fmultistripb]=HiRA->fEB.fnumstrip[j];
+        fHiRACalibratedDataBuffer.fEnergySibHi[fHiRACalibratedDataBuffer.fmultistripb]=HiRA->fEB.fEnergyHi[j];
+        fHiRACalibratedDataBuffer.fEnergySibLo[fHiRACalibratedDataBuffer.fmultistripb]=HiRA->fEB.fEnergyLo[j];
+        fHiRACalibratedDataBuffer.fTimeSib[fHiRACalibratedDataBuffer.fmultistripb]=HiRA->fEB.fTime[j];
+        fHiRACalibratedDataBuffer.fEnergySibMatched[fHiRACalibratedDataBuffer.fmultistripb]=GetSibHiLowMatched(HiRA->fEB.fEnergyHi[j], HiRA->fEB.fEnergyLo[j], i, HiRA->fEB.fnumstrip[j]);
+        fHiRACalibratedDataBuffer.fEnergySibCal[fHiRACalibratedDataBuffer.fmultistripb]=GetSibHiLowMatchedEMeV(HiRA->fEB.fEnergyHi[j], HiRA->fEB.fEnergyLo[j], i, HiRA->fEB.fnumstrip[j]);
+        fHiRACalibratedDataBuffer.fmultistripb++;
+      }
+      for(int j=0; j<HiRA->fCsI.fmulti; j++) {
+        fHiRACalibratedDataBuffer.fnumcsi[fHiRACalibratedDataBuffer.fmulticsi]=HiRA->fCsI.fnumcsi[j];
+        fHiRACalibratedDataBuffer.fEnergycsi[fHiRACalibratedDataBuffer.fmulticsi]=HiRA->fCsI.fEnergy[j];
+        fHiRACalibratedDataBuffer.fTimecsi[fHiRACalibratedDataBuffer.fmulticsi]=HiRA->fCsI.fTime[j];
+        fHiRACalibratedDataBuffer.fEnergycsiCal[fHiRACalibratedDataBuffer.fmulticsi]=GetCsIEMeV(HiRA->fCsI.fEnergy[j], i, HiRA->fCsI.fnumcsi[j]);
+        fHiRACalibratedDataBuffer.fmulticsi++;
+      }
+
+      //Pixelization for the current telescope
+      fHiRAPixelizationModule->Pixelization(i,&fHiRACalibratedDataBuffer,&fHiRACalibratedData);
+    }
+
+    //Particle Identification
+    if(fHiRAIdentificationLoaded) {
+      fHiRAIdentifiationModule->PerformIdentification(&fHiRACalibratedData);
+    }
+
+    //Geometry and Energy
+    for(int i=0; i<fHiRACalibratedData.fmulti; i++) {
+      fHiRACalibratedData.fTheta[i]=GetThetaPixel(fHiRACalibratedData.fnumtel[i], fHiRACalibratedData.fnumstripf[i], fHiRACalibratedData.fnumstripb[i]);
+      fHiRACalibratedData.fPhi[i]=GetPhiPixel(fHiRACalibratedData.fnumtel[i], fHiRACalibratedData.fnumstripf[i], fHiRACalibratedData.fnumstripb[i]);
+      fHiRACalibratedData.fEnergycsiCal[i]=GetCsIEMeV(fHiRACalibratedData.fEnergycsi[i],fHiRACalibratedData.fnumtel[i],fHiRACalibratedData.fnumcsi[i],fHiRACalibratedData.fZ[i],fHiRACalibratedData.fA[i]);
+      fHiRACalibratedData.fEnergycsiCalProtons[i]=GetCsIEMeV(fHiRACalibratedData.fEnergycsi[i],fHiRACalibratedData.fnumtel[i],fHiRACalibratedData.fnumcsi[i], 1, 1);
+      fHiRACalibratedData.fKinEnergy[i]=fHiRACalibratedDataBuffer.fEnergySifMatched[i]+fHiRACalibratedData.fEnergycsiCal[i];
+      fHiRACalibratedData.fBeta[i]=-9999;
+      fHiRACalibratedData.fMomentum[i]=-9999;
+    }
+  }
+
+  if(fIsMB) {
+    HTMicroballData * Microball = fMicroball->Get();
+    //Filling calibrated data structures
+    fMicroballCalibratedData.fmulti=0;
+    for(int i=0; i<Microball->fmulti; i++)
+    {
+      if(!IsMBDetectorBad(Microball->fnumring[i], Microball->fnumdet[i]) && IsMBHit(Microball->fnumring[i], Microball->fnumdet[i],Microball->fFast[i],Microball->fTail[i],Microball->fTime[i])) {
+        fMicroballCalibratedData.fnumring[fMicroballCalibratedData.fmulti] =Microball->fnumring[i];
+        fMicroballCalibratedData.fnumdet[fMicroballCalibratedData.fmulti]  =Microball->fnumdet[i];
+        fMicroballCalibratedData.fTail[fMicroballCalibratedData.fmulti]    =Microball->fTail[i];
+        fMicroballCalibratedData.fFast[fMicroballCalibratedData.fmulti]    =Microball->fFast[i];
+        fMicroballCalibratedData.fTime[fMicroballCalibratedData.fmulti]    =Microball->fTime[i];
+
+        fMicroballCalibratedData.fTheta[fMicroballCalibratedData.fmulti]   =GetMBTheta(Microball->fnumring[i], Microball->fnumdet[i]);
+        fMicroballCalibratedData.fPhi[fMicroballCalibratedData.fmulti]     =GetMBPhi(Microball->fnumring[i], Microball->fnumdet[i]);
+        fMicroballCalibratedData.fThetaRan[fMicroballCalibratedData.fmulti]=GetMBThetaRandom(Microball->fnumring[i], Microball->fnumdet[i]);
+        fMicroballCalibratedData.fPhiRan[fMicroballCalibratedData.fmulti]  =GetMBPhiRandom(Microball->fnumring[i], Microball->fnumdet[i]);
+
+        fMicroballCalibratedData.fmulti++;
+      }
+      //Microball Event Varaibles
+      fMicroballCalibratedData.fb     =GetMBImpactParameter(fMicroballCalibratedData.fmulti);
+      fMicroballCalibratedData.fbhat  =GetMBbhat(fMicroballCalibratedData.fmulti);
+    }
   }
 }
 
@@ -146,6 +228,10 @@ void E15190Reader::BuildCalibratedTree(const char * file_name, Long64_t evt_amou
   if(fIsFA) TreeOut->Branch("ForwardArray.","ForwardArrayCalibratedData",&fForwardArrayCalibratedData,32000,2);
   if(fIsMB) TreeOut->Branch("uBall.","MicroballCalibratedData",&fMicroballCalibratedData,32000,2);
   if(fIsHiRA) TreeOut->Branch("HiRA.","HiRACalibratedData",&fHiRACalibratedData,32000,2);
+
+  TreeOut->GetUserInfo()->Add(fBeam);
+  TreeOut->GetUserInfo()->Add(fBeamEnergy);
+  TreeOut->GetUserInfo()->Add(fTarget);
 
   TreeOut->SetAutoSave(5000000);
 

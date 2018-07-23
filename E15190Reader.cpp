@@ -62,7 +62,9 @@ fMicroballCentrality(new MBImpactParameter()),
 fHiRAGeometryTab(new HiRAGeometry(NUM_TEL,NUM_STRIP_F,NUM_STRIP_B)),
 fSiCalibrationTools(new HiRASiCalibration(NUM_TEL,NUM_STRIP_F,NUM_STRIP_B)),
 fCsICalibrationModule(new HiRACsICalibrationManager()),
-fHiRAStatus(new HiRADetectorStatus(NUM_TEL,NUM_STRIP_F,NUM_STRIP_B))
+fHiRAStatus(new HiRADetectorStatus(NUM_TEL,NUM_STRIP_F,NUM_STRIP_B)),
+fHiRAIdentifiationModule(new HiRAIdentification()),
+fHiRAPixelizationModule(new HiRAPixelization(NUM_TEL))
 {
   //Parsing DataType string to allocate specific detectors
   std::string DetectorsIncluded(DataType);
@@ -138,6 +140,8 @@ E15190Reader::~E15190Reader()
   if(fSiCalibrationTools) delete fSiCalibrationTools;
   if(fCsICalibrationModule) delete fCsICalibrationModule;
   if(fHiRAStatus) delete fHiRAStatus;
+  if(fHiRAIdentifiationModule) delete fHiRAIdentifiationModule;
+  if(fHiRAPixelizationModule) delete fHiRAPixelizationModule;
 }
 
 //____________________________________________________
@@ -161,7 +165,12 @@ void E15190Reader::InitAllCalibrations(HTRunInfo * CurrRunInfo)
   LoadHiRAStripBad(CurrRunInfo->GetHiRADetectorStatusFileName());
   LoadHiRACsIPulserInfo(CurrRunInfo->GetHiRACsIPulserFileName());
   LoadHiRASiHiLowMatching(CurrRunInfo->GetHiRASiHiLowMatchingFileName());
-  LoadHiRACsICalibration(CurrRunInfo->GetNWBGeometryCalibrationFileName(), 1, 1);
+  LoadHiRACsICalibration(CurrRunInfo->GetHiRACsIEnergyCalibrationFileName());
+  LoadHiRAIdentification(CurrRunInfo->GetHiRAPIDFileName());
+
+  fBeam = new TNamed("Beam", CurrRunInfo->GetBeam());
+  fBeamEnergy = new TNamed("Beam Energy (AMeV)", CurrRunInfo->GetBeamEnergy());
+  fTarget = new TNamed("Target", CurrRunInfo->GetTarget());
 }
 
 
@@ -580,37 +589,37 @@ int E15190Reader::LoadMBCentrality(const char * file_name)
 }
 
 //____________________________________________________
-double E15190Reader::GetTheta(int num_ring, int num_det) const
+double E15190Reader::GetMBTheta(int num_ring, int num_det) const
 {
   return fMBGeometryLoaded ? fMicroballGeometry->GetTheta(num_ring, num_det) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetPhi(int num_ring, int num_det) const
+double E15190Reader::GetMBPhi(int num_ring, int num_det) const
 {
   return fMBGeometryLoaded ? fMicroballGeometry->GetPhi(num_ring, num_det) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetThetaRandom(int num_ring, int num_det) const
+double E15190Reader::GetMBThetaRandom(int num_ring, int num_det) const
 {
   return fMBGeometryLoaded ? fMicroballGeometry->GetThetaRandom(num_ring, num_det) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetPhiRandom(int num_ring, int num_det) const
+double E15190Reader::GetMBPhiRandom(int num_ring, int num_det) const
 {
   return fMBGeometryLoaded ? fMicroballGeometry->GetPhiRandom(num_ring, num_det) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::GetImpactParameter(int multiplicity) const
+double E15190Reader::GetMBImpactParameter(int multiplicity) const
 {
   return fMBCentralityLoaded ? fMicroballCentrality->GetImpactParameter(multiplicity) : -9999;
 }
 
 //____________________________________________________
-double E15190Reader::Getbhat(int multiplicity) const
+double E15190Reader::GetMBbhat(int multiplicity) const
 {
   return fMBCentralityLoaded ? fMicroballCentrality->Getbhat(multiplicity) : -9999;
 }
@@ -676,17 +685,17 @@ int E15190Reader::LoadHiRASiCalibration(const char * file_name)
 }
 
 //____________________________________________________
-int E15190Reader::LoadHiRACsICalibration(const char * file_name, int Z, int A)
+int E15190Reader::LoadHiRACsICalibration(const char * file_name)
 {
   if(!fIsHiRA) return 0;
-  int NLines=fCsICalibrationModule->LoadEnergyCalibration(file_name, Z, A);
+  int NLines=fCsICalibrationModule->LoadEnergyCalibration(file_name);
   if(NLines>0) {
     fHiRACsICalibrated=true;
-    printf("Loaded HiRA CsI calibration for Z=%d A=%d from file %s\n", Z, A, file_name);
+    printf("Loaded HiRA CsI calibrations from file %s\n", file_name);
     return NLines;
   } else {
     fHiRACsICalibrated=false;
-    printf("Error: Error while loading HiRA CsI calibration for Z=%d A=%d from file %s\n", Z, A, file_name);
+    printf("Error: Error while loading HiRA CsI calibrations from file %s\n", file_name);
     return -1;
   }
 }
@@ -719,6 +728,22 @@ int E15190Reader::LoadHiRACsIPulserInfo(const char * file_name)
   } else {
     fHiRACsIPulserCalibrated=false;
     printf("Error: Error while loading HiRA CsI pulser settings %s\n", file_name);
+    return -1;
+  }
+}
+
+//____________________________________________________
+int E15190Reader::LoadHiRAIdentification(const char * file_name)
+{
+  if(!fIsHiRA) return 0;
+  int NLines=fHiRAIdentifiationModule->LoadIdentification(file_name);
+  if(NLines>0) {
+    fHiRAIdentificationLoaded=true;
+    printf("Loaded HiRA PID from file %s\n", file_name);
+    return NLines;
+  } else {
+    fHiRAIdentificationLoaded=false;
+    printf("Error: Error while loading HiRA PID %s\n", file_name);
     return -1;
   }
 }
@@ -810,7 +835,7 @@ double E15190Reader::GetSibHiLowMatchedEMeV(int chHi, int chLow, int telescope, 
 //____________________________________________________
 double E15190Reader::GetCsIEMeV(int ch, int telescope, int numcsi, int Z, int A) const
 {
-  return fHiRACsICalibrated&&fHiRACsIPulserCalibrated ? fCsICalibrationModule->GetEnergyValue(gRandom->Uniform(ch-0.5,ch+0.5), telescope, numcsi, Z, A) : -9999;
+  return Z>0&&A>0&&fHiRACsICalibrated&&fHiRACsIPulserCalibrated ? fCsICalibrationModule->GetEnergyValue(gRandom->Uniform(ch-0.5,ch+0.5), telescope, numcsi, Z, A) : -9999;
 }
 
 //____________________________________________________

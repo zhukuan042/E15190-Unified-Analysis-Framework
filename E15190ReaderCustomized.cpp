@@ -108,3 +108,66 @@ void E15190Reader::CreateUsefulForwardArrayHistograms(const char * file_name, Lo
   // closing output file
   FileOut->Close();
 }
+
+
+//____________________________________________________
+void E15190Reader::CreateUsefulHiRAHistograms(const char * file_name, Long64_t evt_amount)
+{
+  // this method constructs some useful HiRA histograms
+
+  if(!fIsHiRA) return;
+
+  TFile * FileOut = new TFile(file_name, "RECREATE");
+  if(FileOut->IsZombie()) {
+    printf("Error: Cannot create file %s\n", file_name);
+    return;
+  }
+
+  // Initializing output histograms
+  TH2D * HiRADECALCSIRAW[NUM_CSI_TEL*NUM_TEL];
+  TH2D * HiRADECALCSICALPROTONS[NUM_TEL];
+  TH2D * HiRADECALCSICALALLPROTONS = new TH2D(Form("DECal_ECal_Protons"),Form("DECal_ECal_Protons"),2000,0,900,1000,0,200);
+  TH2D * HiRADECALCSICALALL = new TH2D(Form("DECal_ECal"),Form("DECal_ECal"),2000,0,500,900,0,200);
+  for(int i=0; i<NUM_TEL; i++) {
+    HiRADECALCSICALPROTONS[i] = new TH2D(Form("DECal_ECal_Protons_%02d", i),Form("DECal_ECal_Protons_%02d", i),2000,0,500,1000,0,200);
+    for(int j=0; j<NUM_CSI_TEL; j++) {
+      HiRADECALCSIRAW[NUM_CSI_TEL*i+j] = new TH2D(Form("DECal_ERaw_%02d_%02d", i, j ),Form("DECal_ERaw_%02d_%02d", i, j ),2000,0,2000,1000,0,200);
+    }
+  }
+
+  Long64_t nentries=fChain->GetEntries();
+  if(evt_amount!=0) {
+    nentries=evt_amount;
+  }
+  Long64_t jentry=0;
+  std::cout << "found " << nentries << " entries\n";
+  for(;fE15190Reader->Next() && jentry<nentries; jentry++)
+  {
+    if(jentry%100000==0) {
+      PrintPercentage(jentry,nentries);
+    }
+
+    HiRACalibratedData * HiRA = fHiRACal->Get();
+
+    for(int i=0; i< HiRA->fmulti; i++) {
+      HiRADECALCSICALALLPROTONS->Fill(HiRA->fEnergycsiCalProtons[i], HiRA->fEnergySifCal[i]);
+      HiRADECALCSICALPROTONS[HiRA->fnumtel[i]]->Fill(HiRA->fEnergycsiCalProtons[i], HiRA->fEnergySifCal[i]);
+      HiRADECALCSICALALL->Fill(HiRA->fEnergycsiCal[i], HiRA->fEnergySifCal[i]);
+      HiRADECALCSIRAW[NUM_CSI_TEL*HiRA->fnumtel[i]+HiRA->fnumcsi[i]]->Fill(HiRA->fEnergycsi[i], HiRA->fEnergySifCal[i]);
+    }
+
+  }
+
+  //Writing histograms to file
+  FileOut->WriteTObject(HiRADECALCSICALALLPROTONS, HiRADECALCSICALALLPROTONS->GetName());
+  FileOut->WriteTObject(HiRADECALCSICALALL, HiRADECALCSICALALL->GetName());
+  for(int i=0; i<NUM_TEL; i++) {
+    FileOut->WriteTObject(HiRADECALCSICALPROTONS[i], HiRADECALCSICALPROTONS[i]->GetName());
+    for(int j=0; j<NUM_CSI_TEL; j++) {
+      FileOut->WriteTObject(HiRADECALCSIRAW[NUM_CSI_TEL*i+j], HiRADECALCSIRAW[NUM_CSI_TEL*i+j]->GetName());
+    }
+  }
+
+  // closing output file
+  FileOut->Close();
+}

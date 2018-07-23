@@ -54,6 +54,9 @@ private:
   std::string * fRunTitle;
 
   //E15190-Analysis-Framework data members
+  std::string * fBeam;
+  std::string * fBeamEnergy;
+  std::string * fTarget;
   std::string * fNWAPositionCalibrationFileName;
   std::string * fNWBPositionCalibrationFileName;
   std::string * fNWATimeOffsetCalibrationFileName;
@@ -75,6 +78,7 @@ private:
   std::string * fHiRADetectorStatusFileName;
   std::string * fHiRASiHiLowMatchingFileName;
   std::string * fHiRAGeometryFileName;
+  std::string * fHiRAPIDFileName;
 
   bool fDataMerged;
   std::string fExperimentName;

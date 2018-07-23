@@ -34,6 +34,9 @@ public:
   HTDAQStackInfo * GetStackInfo(int) const;              //! Returns a HTDAQStackInfo object
 
   //E15190-Analysis-Framework methods
+  void SetBeam(const char * file_name) {fBeam.assign(file_name);}
+  void SetBeamEnergy(const char * file_name) {fBeamEnergy.assign(file_name);}
+  void SetTarget(const char * file_name) {fTarget.assign(file_name);}
   void SetNWAPositionCalibrationFile(const char * file_name) {fNWAPositionCalibrationFileName.assign(file_name);}
   void SetNWBPositionCalibrationFile(const char * file_name) {fNWBPositionCalibrationFileName.assign(file_name);}
   void SetNWATimeOffsetCalibrationFile(const char * file_name) {fNWATimeOffsetCalibrationFileName.assign(file_name);}
@@ -55,6 +58,10 @@ public:
   void SetHiRADetectorStatusFile(const char * file_name) {fHiRADetectorStatusFileName.assign(file_name);}
   void SetHiRASiHiLowMatchingFile(const char * file_name) {fHiRASiHiLowMatchingFileName.assign(file_name);}
   void SetHiRAGeometryFile(const char * file_name) {fHiRAGeometryFileName.assign(file_name);}
+  void SetHiRAPIDFile(const char * file_name) {fHiRAPIDFileName.assign(file_name);}
+  const char * GetBeam() const {return fBeam.c_str();}
+  const char * GetBeamEnergy() const {return fBeamEnergy.c_str();}
+  const char * GetTarget() const {return fTarget.c_str();}
   const char * GetNWAPositionCalibrationFileName() const {return fNWAPositionCalibrationFileName.c_str();}
   const char * GetNWBPositionCalibrationFileName() const {return fNWBPositionCalibrationFileName.c_str();}
   const char * GetNWATimeOffsetCalibrationFileName() const {return fNWATimeOffsetCalibrationFileName.c_str();}
@@ -76,6 +83,7 @@ public:
   const char * GetHiRADetectorStatusFileName() const {return fHiRADetectorStatusFileName.c_str();}
   const char * GetHiRASiHiLowMatchingFileName() const {return fHiRASiHiLowMatchingFileName.c_str();}
   const char * GetHiRAGeometryFileName() const {return fHiRAGeometryFileName.c_str();}
+  const char * GetHiRAPIDFileName() const {return fHiRAPIDFileName.c_str();}
 
   void SetEvtFilePath(const char *);                     //! Set path for evt files of the run
   void SetRunTitle(const char *);                        //! Set run title
@@ -94,6 +102,9 @@ private:
   bool fMappingFileSet;                                  //!
 
   //E15190-Analysis-Framework data members
+  std::string  fBeam;
+  std::string  fBeamEnergy;
+  std::string  fTarget;
   std::string  fNWAPositionCalibrationFileName;
   std::string  fNWBPositionCalibrationFileName;
   std::string  fNWATimeOffsetCalibrationFileName;
@@ -115,6 +126,7 @@ private:
   std::string  fHiRADetectorStatusFileName;
   std::string  fHiRASiHiLowMatchingFileName;
   std::string  fHiRAGeometryFileName;
+  std::string  fHiRAPIDFileName;
 
   std::vector <HTDAQStackInfo *> fStackInfo;             //!
 

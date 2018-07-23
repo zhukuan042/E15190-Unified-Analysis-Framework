@@ -18,6 +18,7 @@ OBJS += NWCalibratedRootEvent.$(ObjSuf)
 OBJS += HTMicroballRootEvent.$(ObjSuf) MBCalibratedRootEvent.$(ObjSuf)
 OBJS += MBDetectorStatus.$(ObjSuf) MBGeometry.$(ObjSuf) MBHitCondition.$(ObjSuf) MBImpactParameter.$(ObjSuf)
 OBJS += EnergyLossModule.$(ObjSuf) nuclear_masses.$(ObjSuf) HiRACsICalibration.$(ObjSuf) HiRASiCalibration.$(ObjSuf) HTHiRARootEvent.$(ObjSuf) HiRADetectorStatus.$(ObjSuf) HiRAGeometry.$(ObjSuf)
+OBJS += HiRAPixelization.$(ObjSuf) HiRAIdentification.$(ObjSuf) elist.$(ObjSuf) ZApar.$(ObjSuf) HiRAPixel.$(ObjSuf)
 OBJS += HiRACalibratedRootEvent.$(ObjSuf)
 OBJS += HTRunInfo.$(ObjSuf) HTDAQStackInfo.$(ObjSuf) HTExperimentInfo.$(ObjSuf) HTModuleInfo.$(ObjSuf)
 OBJS += VWPulseHeightCalibration.$(ObjSuf)
@@ -89,6 +90,7 @@ CXXFLAGS  += $(INCLUDES) -std=c++11 -fPIC -O3
 all:
 	$(MAKE) -C HTRunInfo ;	$(MAKE) -C HTRunInfo install
 	$(MAKE) root
+	$(MAKE) install
 
 
 root : $(PROG)
@@ -138,7 +140,7 @@ install : $(E15190SHARED) $(PROG)
 
 $(E15190SHARED): $(OBJS) $(ROOTHTNW_DICTO) $(ROOTHTVW_DICTO) $(ROOTHTFA_DICTO) $(ROOTNWCALIBRATED_DICTO) $(ROOTHTMB_DICTO) $(ROOTMBCALIBRATED_DICTO) $(ROOTHTHIRA_DICTO) $(ROOTHIRACALIBRATED_DICTO)
 	$(CXX) $(CXXFLAGS) -shared -o $(LibDir)${@} $^ $(SYSLIB) $(CFLAGS) $(RLIBS)
-	cp $(ROOTHTNW_PCM) $(ROOTHTVW_PCM) $(ROOTHTMB_PCM) $(ROOTNWCALIBRATED_PCM) $(ROOTMBCALIBRATED_PCM) $(ROOTHTHIRA_PCM) $(ROOTHIRACALIBRATED_PCM) $(LibDir)
+	cp $(ROOTHTNW_PCM) $(ROOTHTFA_PCM) $(ROOTHTVW_PCM) $(ROOTHTMB_PCM) $(ROOTNWCALIBRATED_PCM) $(ROOTMBCALIBRATED_PCM) $(ROOTHTHIRA_PCM) $(ROOTHIRACALIBRATED_PCM) $(LibDir)
 
 distclean:
 	$(MAKE) -C HTRunInfo distclean

@@ -22,34 +22,35 @@
 #include <TLatex.h>
 #include <TCanvas.h>
 
-#include "HTNeutronWallRootEvent.h"
-#include "HTForwardArrayRootEvent.h"
-#include "HTVetoWallRootEvent.h"
-#include "HTMicroballRootEvent.h"
-#include "HTHiRARootEvent.h"
-#include "HiRACalibratedRootEvent.h"
+#include <HTNeutronWallRootEvent.h>
+#include <HTForwardArrayRootEvent.h>
+#include <HTVetoWallRootEvent.h>
+#include <HTMicroballRootEvent.h>
+#include <HTHiRARootEvent.h>
+#include <HiRACalibratedRootEvent.h>
 #include <HTRunInfo.h>
 
-#include "NWPositionCalibration.h"
-#include "NWCosmicRayManager.h"
-#include "NWCalibratedRootEvent.h"
-#include "NWTimeCalibration.h"
-#include "NWGeometry.h"
-#include "FATimeCalibration.h"
-#include "NWPulseHeightCalibration.h"
-#include "VWPulseHeightCalibration.h"
+#include <NWPositionCalibration.h>
+#include <NWCosmicRayManager.h>
+#include <NWCalibratedRootEvent.h>
+#include <NWTimeCalibration.h>
+#include <NWGeometry.h>
+#include <FATimeCalibration.h>
+#include <NWPulseHeightCalibration.h>
+#include <VWPulseHeightCalibration.h>
 
-#include "MBCalibratedRootEvent.h"
-#include "MBDetectorStatus.h"
-#include "MBGeometry.h"
-#include "MBHitCondition.h"
-#include "MBImpactParameter.h"
+#include <MBCalibratedRootEvent.h>
+#include <MBDetectorStatus.h>
+#include <MBGeometry.h>
+#include <MBHitCondition.h>
+#include <MBImpactParameter.h>
 
 #include <HiRAGeometry.h>
 #include <HiRASiCalibration.h>
 #include <HiRACsICalibration.h>
 #include <HiRADetectorStatus.h>
-
+#include <HiRAIdentification.h>
+#include <HiRAPixelization.h>
 
 #include "shared.h"
 
@@ -88,11 +89,12 @@ public :
   int LoadMBFastSlowHitCondition(const char * file_name);
   int LoadMBCentrality(const char * file_name);
   int LoadHiRAGeometry(const char *);
-  int LoadHiRACsICalibration(const char *, int Z=1, int A=1);
+  int LoadHiRACsICalibration(const char *);
   int LoadHiRASiCalibration(const char *);
   int LoadHiRAStripBad(const char *);
   int LoadHiRASiHiLowMatching(const char *);
   int LoadHiRACsIPulserInfo(const char *);
+  int LoadHiRAIdentification(const char *);
 
   // NW/VW/FA methods
   double GetNWAXcm(int num_bar, double tleft, double tright) const;
@@ -123,12 +125,12 @@ public :
   double GetFATimePulseHeightCorrection(int num_det, double pulse_height) const;
   double GetVWGeoMeanMatched(double ch, int num_bar) const;
   // Microball methods
-  double GetTheta(int num_ring, int num_det) const;
-  double GetPhi(int num_ring, int num_det) const;
-  double GetThetaRandom(int num_ring, int num_det) const;
-  double GetPhiRandom(int num_ring, int num_det) const;
-  double GetImpactParameter(int multiplicity) const;
-  double Getbhat(int multiplicity) const;
+  double GetMBTheta(int num_ring, int num_det) const;
+  double GetMBPhi(int num_ring, int num_det) const;
+  double GetMBThetaRandom(int num_ring, int num_det) const;
+  double GetMBPhiRandom(int num_ring, int num_det) const;
+  double GetMBImpactParameter(int multiplicity) const;
+  double GetMBbhat(int multiplicity) const;
   bool IsMBDetectorBad(int num_ring, int num_det) const;
   bool IsMBHit (int num_ring, int num_det, double fast, double tail, double time) const;
   //HiRA methods
@@ -165,6 +167,7 @@ public :
   // input here customized methods
   void   CreateUsefulVetoWallHistograms(const char *, Long64_t evt_amount=0);
   void   CreateUsefulForwardArrayHistograms(const char *, Long64_t evt_amount=0);
+  void   CreateUsefulHiRAHistograms(const char *, Long64_t evt_amount=0);
 
 private :
   //The TTreeReader
@@ -191,8 +194,13 @@ private :
   ForwardArrayCalibratedData fForwardArrayCalibratedData;
   MicroballCalibratedData fMicroballCalibratedData;
   HiRACalibratedData fHiRACalibratedData;
+  HiRACalibratedBuffer fHiRACalibratedDataBuffer;
 
   TChain      * fChain;
+
+  TNamed * fBeam;
+  TNamed * fBeamEnergy;
+  TNamed * fTarget;
 
   double fDegToRad;
   double fRadToDeg;
@@ -234,6 +242,7 @@ private :
   bool fHiRAGeometryCalibrated;
   bool fHiRAStripBadLoaded;
   bool fHiRASiHiLowMatched;
+  bool fHiRAIdentificationLoaded;
 
   NWPositionCalibration * fNWBPositionCalibration;
   NWPositionCalibration * fNWAPositionCalibration;
@@ -257,6 +266,8 @@ private :
   HiRASiCalibration *fSiCalibrationTools;
   HiRACsICalibrationManager *fCsICalibrationModule;
   HiRADetectorStatus *fHiRAStatus;
+  HiRAIdentification *fHiRAIdentifiationModule;
+  HiRAPixelization * fHiRAPixelizationModule;
 
   void PrintPercentage(Long64_t, Long64_t) const;
 };

@@ -99,7 +99,7 @@ public:
   ~HiRACsICalibrationManager();
 
   int LoadPulserInfo(const char *);
-  int LoadEnergyCalibration(const char *, int Z=1, int A=1);
+  int LoadEnergyCalibration(const char *);
   void Clear();
 
   double GetVoltageValue(double ch, int numtel, int numcsi) const;
