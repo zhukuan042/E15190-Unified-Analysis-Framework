@@ -126,8 +126,8 @@ double HiRACsICalibrationManager::GetVoltageValue(double ch, int numtel, int num
 // *  Z=1 : A=1, A=2 and A=3 are calibrated by using a light corrected formula. Because of the time consuming calculation, this formula is computed
 //    only once at the beginning of the analysis process to create fiducial points that are then interpolated. This calibration starts from the CsI values in Volt.
 // *  Z=2 : A=3 and A=4 as a first approximation, these calibrations are here considered linear V -> MeV
-// *  Z=3 : A=6 and A=7
-// *  Z=4 : A=7
+// *  Z=3 : A=6 and A=7 are for now linear
+// *  Z=4 : A=7 are for now linear
 //
 //______________________________________________
 double HiRACsICalibrationManager::GetEnergyValue(double ch, int numtel, int numcsi, int Z, int A) const
@@ -289,6 +289,10 @@ void HiRACsICalibration::InitCalibration()
     fCalibrationInitialized=true;
     fCalibrationFunc = new TF1 ("fCalibrationFunc", "[0]+[1]*x", 0, 10);
     fCalibrationFunc->SetParameters(fParameters);
+  } else if (fZ==3 || fZ==4) {
+    fCalibrationInitialized=true;
+    fCalibrationFunc = new TF1 ("fCalibrationFunc", "[0]+[1]*x", 0, 10);
+    fCalibrationFunc->SetParameters(fParameters);
   } else {
     fCalibrationInitialized=false;
   }
@@ -307,6 +311,8 @@ double HiRACsICalibration::GetEnergy(double V) const
       return fVtoEExtrapolated->Eval(V,0,"");
     }
   } else if(fZ==2) { //Get Energy for Z=2
+    fCalibrationFunc->Eval(V);
+  } else if(fZ==3 || fZ==4) { //Get Energy for Z=3 and Z=4
     fCalibrationFunc->Eval(V);
   }
 }
