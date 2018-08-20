@@ -49,6 +49,12 @@ int main (int argc, char ** argv)
     //Building HTRunInfo class ///////////
     HTRunInfo * CurrRunInfo = ExpInfo->GetRunInfo(cur_run);
 
+    //Exclude run if it is Junk //////////
+    if(CurrRunInfo->IsJunk()) {
+      printf("Run %d is junk -> the run will be skipped.\n", cur_run);
+      continue;
+    }
+
     //Loading calibration files //////////
     //These are loaded for the current run
     E15190Analyzer.InitAllCalibrations(CurrRunInfo);

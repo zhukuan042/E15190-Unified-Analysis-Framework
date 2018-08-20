@@ -79,6 +79,7 @@ private:
   std::string * fHiRASiHiLowMatchingFileName;
   std::string * fHiRAGeometryFileName;
   std::string * fHiRAPIDFileName;
+  bool * fIsJunk;
 
   bool fDataMerged;
   std::string fExperimentName;

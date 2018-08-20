@@ -42,6 +42,7 @@ HTExperimentInfo::~HTExperimentInfo()
   if(fHiRASiHiLowMatchingFileName) delete [] fHiRASiHiLowMatchingFileName;
   if(fHiRAGeometryFileName) delete [] fHiRAGeometryFileName;
   if(fHiRAPIDFileName) delete [] fHiRAPIDFileName;
+  if(fIsJunk) delete [] fIsJunk;
 }
 
 //________________________________________________
@@ -95,6 +96,7 @@ int HTExperimentInfo::InitClass(const char *file_name)
   fHiRASiHiLowMatchingFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fHiRAGeometryFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fHiRAPIDFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fIsJunk=(bool*)new bool[fLastRun-fFirstRun+1];
 
   // Retrieving all previously stored run titles from database file
   RetrieveRunTitlesFromDatabaseFile();
@@ -102,6 +104,8 @@ int HTExperimentInfo::InitClass(const char *file_name)
   //Set run-by-run setup configuration
   for(int run_num=fFirstRun; run_num<=fLastRun; run_num++)
   {
+    //NOTE: I initialize here fIsJunk to false for the current run. Later, this value can be changed only to true.
+    fIsJunk[run_num-fFirstRun]=false;
     NLinesRead += LoadRunConfiguration(file_name,run_num);
     // Only if the run title was not previously found retrieve it from evt file and store into the database file
     if(fRunTitle[run_num-fFirstRun].empty()) {
@@ -234,6 +238,7 @@ HTRunInfo * HTExperimentInfo::GetRunInfo(int run_num) const
   newRunInfo->SetHiRASiHiLowMatchingFile(	 fHiRASiHiLowMatchingFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetHiRAGeometryFile(		 fHiRAGeometryFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetHiRAPIDFile(		 fHiRAPIDFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetJunk(		 fIsJunk[run_num-fFirstRun]);
 
   return newRunInfo;
 }
@@ -286,8 +291,9 @@ void HTExperimentInfo::ParseSetConfigLineRunInfo(const char *line_to_parse, int 
   bool RunFound=false;
 
   //NOTE: for a future improvement take into account more possible options not only --run and --exclude
-  //A --run option can contain or "," or "-" as a separator, not combination of both
+  //A --run or --exclude option can contain or "," or "-" as a separator, not combination of both
   // Loop on the option strings, every time one finds -- this is an option string, e.g. --run, --exclude
+  // 2018/08/20 Included the possibility of specifying only 1 run with --run or --exclude options
   while(LineStream>>Option && Option.find("--")!=std::string::npos) {
     if(Option.find("--run=")!=std::string::npos) {
       Option.assign(Option.substr(Option.find("--run=")+6));
@@ -305,13 +311,31 @@ void HTExperimentInfo::ParseSetConfigLineRunInfo(const char *line_to_parse, int 
         std::getline(LineRunStream, StopRun, '-');
         int StartRunNum=std::stoi(StartRun);
         int StopRunNum=std::stoi(StopRun);
-        if(run_num>=StartRunNum && run_num<=StopRunNum) RunFound=true;;
+        if(run_num>=StartRunNum && run_num<=StopRunNum) RunFound=true;
+      }
+      if(Option.find(",")==std::string::npos && Option.find("-")==std::string::npos && !Option.empty()) {
+        if(run_num==std::stoi(Option)) RunFound=true;
       }
     } else if (Option.find("--exclude=")!=std::string::npos) {
-        std::istringstream LineExcludeStream(Option.substr(Option.find("--exclude=")+10));
-        std::string RunToExclude;
-        while(std::getline(LineExcludeStream, RunToExclude, ',')) {
-          if(run_num==std::stoi(RunToExclude)) return; //this run is excluded
+        Option.assign(Option.substr(Option.find("--exclude=")+10));
+        std::istringstream LineExcludeStream(Option);
+        if(Option.find(",")!=std::string::npos) {
+          std::string RunToExclude;
+          while(std::getline(LineExcludeStream, RunToExclude, ',')) {
+            if(run_num==std::stoi(RunToExclude)) return; //this run is excluded
+          }
+        }
+        if(Option.find("-")!=std::string::npos) {
+          std::string StartRun;
+          std::string StopRun;
+          std::getline(LineExcludeStream, StartRun, '-');
+          std::getline(LineExcludeStream, StopRun, '-');
+          int StartRunNum=std::stoi(StartRun);
+          int StopRunNum=std::stoi(StopRun);
+          if(run_num>=StartRunNum && run_num<=StopRunNum) return; //this run belong to a bunch of runs to be excluded
+        }
+        if(Option.find(",")==std::string::npos && Option.find("-")==std::string::npos && !Option.empty()) {
+          if(run_num==std::stoi(Option)) return;
         }
       }
     }
@@ -394,6 +418,8 @@ void HTExperimentInfo::ParseSetConfigLineRunInfo(const char *line_to_parse, int 
     fHiRAGeometryFileName[run_num-fFirstRun].assign(NewValue);
   } else if (ValueToSet.compare("HIRA_PID")==0) {
     fHiRAPIDFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("JUNK_RUN")==0) {
+    fIsJunk[run_num-fFirstRun]=true;
   }
 
   return;

@@ -49,6 +49,12 @@ int main (int argc, char ** argv)
     //Building HTRunInfo class ///////////
     HTRunInfo * CurrRunInfo = ExpInfo->GetRunInfo(cur_run);
 
+    //Exclude run if it is Junk //////////
+    if(CurrRunInfo->IsJunk()) {
+      printf("Run %d is junk -> the run will be skipped.\n", cur_run);
+      continue;
+    }
+
     //Definition of the output file //////
 
     std::string FileOutName(Form("output/output_%04d.root", cur_run));
@@ -57,7 +63,7 @@ int main (int argc, char ** argv)
     //Run the required method(s) /////////
 
     E15190Analyzer.LoopOnCalibratedData(FileOutName.c_str(), evt_amount);
-    
+
     printf("\nproduced %s file\n", FileOutName.c_str());
   }
   // End of the main loop //////////////////
