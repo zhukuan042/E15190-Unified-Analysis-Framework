@@ -68,9 +68,9 @@ To be written.
 ## The E15190Reader Framework
 ### Framework Description
 The framework allows to handle data of the E15190 experiment, with HiRAEVTMapper data structures, by including all the existing calibrations and detector analysis tools. The framework is fully versatile since it allows to include any possible combination of existing detectors in the analysis, and any possible combination of required calibrations. Calibrations are automatically retrieved from the corresponding files (usually located in the "calibration" sub-folder, as configured run-by-run in the "config/HiRAEVT.conf" file, and depending on the required combination of detectors). The framework includes 3 main features that are here summarized:
-a) Looping on previously existing raw data 
-b) Building a new tree with calibrated data structures 
-c) Looping on previously built calibrated data tree 
+a) Looping on previously existing raw data  
+b) Building a new tree with calibrated data structures  
+c) Looping on previously built calibrated data tree  
 ### Run the code
 ### Run the code on NSCL ember
 ### Calibrated output data
