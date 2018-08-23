@@ -311,10 +311,10 @@ double HiRACsICalibration::GetEnergy(double V) const
       return fVtoEExtrapolated->Eval(V,0,"");
     }
   } else if(fZ==2) { //Get Energy for Z=2
-    fCalibrationFunc->Eval(V);
+    return fCalibrationFunc->Eval(V);
   } else if(fZ==3 || fZ==4) { //Get Energy for Z=3 and Z=4
-    fCalibrationFunc->Eval(V);
-  }
+    return fCalibrationFunc->Eval(V);
+  } else return -1;
 }
 
 //______________________________________________

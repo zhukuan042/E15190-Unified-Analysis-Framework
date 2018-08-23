@@ -131,7 +131,7 @@ void E15190Reader::CreateUsefulHiRAHistograms(const char * file_name, Long64_t e
   for(int i=0; i<NUM_TEL; i++) {
     HiRADECALCSICALPROTONS[i] = new TH2D(Form("DECal_ECal_Protons_%02d", i),Form("DECal_ECal_Protons_%02d", i),2000,0,500,1000,0,200);
     for(int j=0; j<NUM_CSI_TEL; j++) {
-      HiRADECALCSIRAW[NUM_CSI_TEL*i+j] = new TH2D(Form("DECal_ERaw_%02d_%02d", i, j ),Form("DECal_ERaw_%02d_%02d", i, j ),2000,0,2000,1000,0,200);
+      HiRADECALCSIRAW[NUM_CSI_TEL*i+j] = new TH2D(Form("DECal_ERaw_%02d_%02d", i, j ),Form("DECal_ERaw_%02d_%02d", i, j ),3000,0,3000,3000,0,200);
     }
   }
 
