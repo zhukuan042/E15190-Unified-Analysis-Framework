@@ -21,7 +21,7 @@ OBJS += EnergyLossModule.$(ObjSuf) nuclear_masses.$(ObjSuf) HiRACsICalibration.$
 OBJS += HiRAPixelization.$(ObjSuf) HiRAIdentification.$(ObjSuf) elist.$(ObjSuf) ZApar.$(ObjSuf) HiRAPixel.$(ObjSuf)
 OBJS += HiRACalibratedRootEvent.$(ObjSuf)
 OBJS += HTRunInfo.$(ObjSuf) HTDAQStackInfo.$(ObjSuf) HTExperimentInfo.$(ObjSuf) HTModuleInfo.$(ObjSuf)
-OBJS += VWPulseHeightCalibration.$(ObjSuf)
+OBJS += VWPulseHeightCalibration.$(ObjSuf) VWIdentification.$(ObjSuf) VWGeometry.$(ObjSuf)
 OBJS := $(addprefix $(ObjDir), $(OBJS))
 
 RLIBS := -L./$(LibDir)

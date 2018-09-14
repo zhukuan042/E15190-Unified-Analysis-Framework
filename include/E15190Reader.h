@@ -38,6 +38,8 @@
 #include <FATimeCalibration.h>
 #include <NWPulseHeightCalibration.h>
 #include <VWPulseHeightCalibration.h>
+#include <VWIdentification.h>
+#include <VWGeometry.h>
 
 #include <MBCalibratedRootEvent.h>
 #include <MBDetectorStatus.h>
@@ -84,6 +86,8 @@ public :
   int LoadFATimeCalibration(const char * file_name);
   int LoadFATimePulseHeightCorrection(const char * file_name);
   int LoadVWGainMatchig(const char * file_name);
+  int LoadVWIdentificationCuts(const char * file_name);
+  int LoadVWGeometryFiducialPoints(const char * file_name);
   int LoadMBGeometry(const char * file_name);
   int LoadMBDetectorStatus(const char * file_name);
   int LoadMBFastSlowHitCondition(const char * file_name);
@@ -124,6 +128,15 @@ public :
   double GetFATimeOffset(int num_det) const;
   double GetFATimePulseHeightCorrection(int num_det, double pulse_height) const;
   double GetVWGeoMeanMatched(double ch, int num_bar) const;
+  double GetVWTheta(int num_bar, double Ycm) const;
+  double GetVWPhi(int num_bar, double Ycm) const;
+  double GetVWThetaRan(int num_bar, double Ycm) const;
+  double GetVWPhiRan(int num_bar, double Ycm) const;
+  double GetVWDistance(int num_bar, double Ycm) const;
+  double GetVWDistanceRan(int num_bar, double Ycm) const;
+  bool IsVWChargedParticle(double DE, double TOF) const;
+  int GetVWZ(double DE, double TOF) const;
+  int GetVWA(double DE, double TOF) const;
   // Microball methods
   double GetMBTheta(int num_ring, int num_det) const;
   double GetMBPhi(int num_ring, int num_det) const;
@@ -232,6 +245,8 @@ private :
   bool fNWBPulseHeightCalibrated;
   bool fFATimeCalibrated;
   bool fVWGainMatched;
+  bool fVWIdentificationLoaded;
+  bool fVWGeometryLoaded;
   bool fMBGeometryLoaded;
   bool fMBStatusLoaded;
   bool fMBHitConditionLoaded;
@@ -254,8 +269,10 @@ private :
   NWGeometry            * fNWBGeometry;
   NWPulseHeightCalibration * fNWAPulseHeightCalibrationTools;
   NWPulseHeightCalibration * fNWBPulseHeightCalibrationTools;
-  FATimeCalibration     * fFATimeCalibration;
+  FATimeCalibration        * fFATimeCalibration;
   VWPulseHeightCalibration * fVWPulseHeightCalibrationTools;
+  VWIdentification         * fVWIdentificationModule;
+  VWGeometry               * fVWGeometryModule;
 
   MBDetectorStatus      * fMicroballStatus;
   MBGeometry            * fMicroballGeometry;

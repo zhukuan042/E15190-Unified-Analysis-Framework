@@ -68,6 +68,8 @@ private:
   std::string * fFATimeCalibrationFileName;
   std::string * fFAPulseHeightCorrectionFileName;
   std::string * fVWGainMatchingCalibrationFileName;
+  std::string * fVWDETOFPIDCalibrationFileName;
+  std::string * fVWGeometryFileName;  
   std::string * fMBDetectorStatusFileName;
   std::string * fMBGeometryFileName;
   std::string * fMBImpactParameterFileName;

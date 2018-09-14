@@ -33,6 +33,7 @@ fNWAPulseHeightCalibrated(false),
 fNWBPulseHeightCalibrated(false),
 fFATimeCalibrated(false),
 fVWGainMatched(false),
+fVWIdentificationLoaded(false),
 fMBGeometryLoaded(false),
 fMBStatusLoaded(false),
 fMBHitConditionLoaded(false),
@@ -55,6 +56,8 @@ fNWAPulseHeightCalibrationTools(new NWPulseHeightCalibration(NUM_BARS_NWA)),
 fNWBPulseHeightCalibrationTools(new NWPulseHeightCalibration(NUM_BARS_NWB)),
 fFATimeCalibration(new FATimeCalibration(NUM_DETECTORS_FA)),
 fVWPulseHeightCalibrationTools(new VWPulseHeightCalibration(NUM_BARS_VW)),
+fVWIdentificationModule(new VWIdentification()),
+fVWGeometryModule(new VWGeometry(NUM_BARS_VW)),
 fMicroballStatus(new MBDetectorStatus()),
 fMicroballGeometry(new MBGeometry()),
 fMicroballHitCondition(new MBHitCondition()),
@@ -126,22 +129,6 @@ E15190Reader::~E15190Reader()
   }
 
   if(fHiRA) delete [] fHiRA;
-  if(fNWAPositionCalibration) delete fNWAPositionCalibration;
-  if(fNWBPositionCalibration) delete fNWBPositionCalibration;
-  if(fNWACosmicRayInfo) delete fNWACosmicRayInfo;
-  if(fNWBCosmicRayInfo) delete fNWBCosmicRayInfo;
-  if(fNWATimeCalibration) delete fNWATimeCalibration;
-  if(fNWBTimeCalibration) delete fNWBTimeCalibration;
-  if(fFATimeCalibration) delete fFATimeCalibration;
-  if(fVWPulseHeightCalibrationTools) delete fVWPulseHeightCalibrationTools;
-  if(fNWAGeometry) delete fNWAGeometry;
-  if(fNWBGeometry) delete fNWBGeometry;
-  if(fHiRAGeometryTab) delete fHiRAGeometryTab;
-  if(fSiCalibrationTools) delete fSiCalibrationTools;
-  if(fCsICalibrationModule) delete fCsICalibrationModule;
-  if(fHiRAStatus) delete fHiRAStatus;
-  if(fHiRAIdentifiationModule) delete fHiRAIdentifiationModule;
-  if(fHiRAPixelizationModule) delete fHiRAPixelizationModule;
 }
 
 //____________________________________________________
@@ -150,12 +137,15 @@ void E15190Reader::InitAllCalibrations(HTRunInfo * CurrRunInfo)
   LoadNWPositionCalibration(CurrRunInfo->GetNWBPositionCalibrationFileName(), "NWB");
   LoadNWPositionCalibration(CurrRunInfo->GetNWAPositionCalibrationFileName(), "NWA");
   LoadNWGeometryFiducialPoints(CurrRunInfo->GetNWBGeometryCalibrationFileName(), "NWB");
+  LoadNWGeometryFiducialPoints(CurrRunInfo->GetNWAGeometryCalibrationFileName(), "NWA");
   LoadNWTimeCalibration(CurrRunInfo->GetNWBTimeOffsetCalibrationFileName(), "NWB");
   LoadNWPulseHeightMatching(CurrRunInfo->GetNWBGainMatchingCalibrationFileName(), "NWB");
   LoadNWPulseHeightMatching(CurrRunInfo->GetNWAGainMatchingCalibrationFileName(), "NWA");
   LoadFATimeCalibration(CurrRunInfo->GetFATimeCalibrationFileName());
   LoadFATimePulseHeightCorrection(CurrRunInfo->GetFAPulseHeightCorrectionFileName());
   LoadVWGainMatchig(CurrRunInfo->GetVWGainMatchingCalibrationFileName());
+  LoadVWIdentificationCuts(CurrRunInfo->GetVWDETOFPIDCalibrationFileName());
+  LoadVWGeometryFiducialPoints(CurrRunInfo->GetVWGeometryFileName());
   LoadMBGeometry(CurrRunInfo->GetMBGeometryFileName());
   LoadMBDetectorStatus(CurrRunInfo->GerMBDetectorStatusFileName());
   LoadMBFastSlowHitCondition(CurrRunInfo->GetMBHitConditionFileName());
@@ -363,6 +353,38 @@ int E15190Reader::LoadVWGainMatchig(const char * file_name)
 }
 
 //____________________________________________________
+int E15190Reader::LoadVWIdentificationCuts(const char * file_name)
+{
+  if(!fIsVW) return 0;
+  int NLines=fVWIdentificationModule->LoadIdentificationCuts(file_name);
+  if(NLines>0) {
+    fVWIdentificationLoaded=true;
+    printf("Loaded VW DETOF identification cuts %s\n", file_name);
+    return NLines;
+  } else {
+    fVWIdentificationLoaded=false;
+    printf("Error: Error while loading VW DETOF identification cuts %s\n", file_name);
+    return -1;
+  }
+}
+
+//____________________________________________________
+int E15190Reader::LoadVWGeometryFiducialPoints(const char * file_name)
+{
+  if(!fIsVW) return 0;
+  int NLines=fVWGeometryModule->LoadFiducialPoints(file_name);
+  if(NLines>0) {
+    fVWGeometryLoaded=true;
+    printf("Loaded VW Geometry %s\n", file_name);
+    return NLines;
+  } else {
+    fVWGeometryLoaded=false;
+    printf("Error: Error while loading VW Geometry %s\n", file_name);
+    return -1;
+  }
+}
+
+//____________________________________________________
 double E15190Reader::GetNWAXcm(int num_bar, double tleft, double tright) const
 {
   return fNWAPositionCalibrated ? fNWAPositionCalibration->GetPosition(num_bar, tleft, tright) : -9999;
@@ -522,6 +544,60 @@ double E15190Reader::GetFATimePulseHeightCorrection(int num_det, double pulse_he
 double E15190Reader::GetVWGeoMeanMatched(double ch, int num_bar) const
 {
   return fVWGainMatched ? fVWPulseHeightCalibrationTools->GetGeoMeanMatched(ch, num_bar) : -9999;
+}
+
+//____________________________________________________
+double E15190Reader::GetVWTheta(int num_bar, double Ycm) const
+{
+  return fVWGeometryLoaded ? fVWGeometryModule->GetTheta(num_bar, Ycm) : -9999;
+}
+
+//____________________________________________________
+double E15190Reader::GetVWPhi(int num_bar, double Ycm) const
+{
+  return fVWGeometryLoaded ? fVWGeometryModule->GetPhi(num_bar, Ycm) : -9999;
+}
+
+//____________________________________________________
+double E15190Reader::GetVWThetaRan(int num_bar, double Ycm) const
+{
+  return fVWGeometryLoaded ? fVWGeometryModule->GetThetaRan(num_bar, Ycm) : -9999;
+}
+
+//____________________________________________________
+double E15190Reader::GetVWPhiRan(int num_bar, double Ycm) const
+{
+  return fVWGeometryLoaded ? fVWGeometryModule->GetPhiRan(num_bar, Ycm) : -9999;
+}
+
+//____________________________________________________
+double E15190Reader::GetVWDistance(int num_bar, double Ycm) const
+{
+  return fVWGeometryLoaded ? fVWGeometryModule->GetR(num_bar, Ycm) : -9999;
+}
+
+//____________________________________________________
+double E15190Reader::GetVWDistanceRan(int num_bar, double Ycm) const
+{
+  return fVWGeometryLoaded ? fVWGeometryModule->GetRRan(num_bar, Ycm) : -9999;
+}
+
+//____________________________________________________
+bool E15190Reader::IsVWChargedParticle(double DE, double TOF) const
+{
+  return fVWIdentificationLoaded ? fVWIdentificationModule->IsChargedParticle(DE, TOF) : 0;
+}
+
+//____________________________________________________
+int E15190Reader::GetVWZ(double DE, double TOF) const
+{
+  return fVWIdentificationLoaded ? fVWIdentificationModule->GetZ(DE, TOF) : -9999;
+}
+
+//____________________________________________________
+int E15190Reader::GetVWA(double DE, double TOF) const
+{
+  return fVWIdentificationLoaded ? fVWIdentificationModule->GetA(DE, TOF) : -9999;
 }
 
 //____________________________________________________

@@ -41,11 +41,11 @@ int main (int argc, char ** argv)
     std::string path_to_evt_file(data_path+file_evt_string);
     int n_files = dataChain->Add((data_path+file_evt).c_str());
     printf("%d Root files added to chain for run %d\n", n_files, cur_run);
-
+    if(n_files<0) continue;
 
     //Building framework /////////////////
 
-    E15190Reader E15190Analyzer(dataChain, "HiRA");
+    E15190Reader E15190Analyzer(dataChain, "VW");
 
     //Building HTRunInfo class ///////////
     HTRunInfo * CurrRunInfo = ExpInfo->GetRunInfo(cur_run);
@@ -61,7 +61,7 @@ int main (int argc, char ** argv)
     E15190Analyzer.InitAllCalibrations(CurrRunInfo);
 
     //Definition of the output file //////
-    std::string FileOutName(Form("outputNW/CalibratedData_HiRA_%04d.root", cur_run));
+    std::string FileOutName(Form("/mnt/analysis/e15190/dellaqui/data/HiRA/CalibratedData_HiRA_%04d.root", cur_run));
 
     //Run the required method(s) /////////
     E15190Analyzer.BuildCalibratedTree(FileOutName.c_str(), evt_amount);

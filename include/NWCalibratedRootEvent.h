@@ -51,9 +51,13 @@ public:
   Double_t *fGeoMean;     //[fmulti]
 
   Double_t *fGeoMeanMatched; //[fmulti]
-  Int_t    fidmulti;
-  Int_t    *fZ;           //[fmulti]
-  Int_t    *fA;           //[fmulti]
+  Double_t *fYcm;            //[fmulti]
+  Double_t *fTheta;          //[fmulti]
+  Double_t *fPhi;            //[fmulti]
+  Double_t *fThetaRan;       //[fmulti]
+  Double_t *fPhiRan;         //[fmulti]
+  Double_t *fDistcm;         //[fmulti]
+  Double_t *fDistRancm;      //[fmulti]
 
   VetoWallCalibratedData(int);
   VetoWallCalibratedData();

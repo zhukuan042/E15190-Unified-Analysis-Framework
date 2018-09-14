@@ -124,6 +124,7 @@ void E15190Reader::CreateUsefulHiRAHistograms(const char * file_name, Long64_t e
   }
 
   // Initializing output histograms
+  //TH2D * HiRADERAWCSIRAW_SINGLESTRIPCSI=new TH2D("DE_Raw_ERaw_00_05_00", "DE_Raw_ERaw_00_05_00", 3000,0,3000,4000,0,8000);
   TH2D * HiRADECALCSIRAW[NUM_CSI_TEL*NUM_TEL];
   TH2D * HiRADECALCSICALPROTONS[NUM_TEL];
   TH2D * HiRADECALCSICALALLPROTONS = new TH2D(Form("DECal_ECal_Protons"),Form("DECal_ECal_Protons"),2000,0,900,1000,0,200);
@@ -150,6 +151,9 @@ void E15190Reader::CreateUsefulHiRAHistograms(const char * file_name, Long64_t e
     HiRACalibratedData * HiRA = fHiRACal->Get();
 
     for(int i=0; i< HiRA->fmulti; i++) {
+
+      //if(HiRA->fnumtel[i]==0 && HiRA->fnumcsi[i]==0 && HiRA->fnumstripf[i]==5) HiRADERAWCSIRAW_SINGLESTRIPCSI->Fill(HiRA->fEnergycsi[i], HiRA->fEnergySifHi[i]);
+
       HiRADECALCSICALALLPROTONS->Fill(HiRA->fEnergycsiCalProtons[i], HiRA->fEnergySifCal[i]);
       HiRADECALCSICALPROTONS[HiRA->fnumtel[i]]->Fill(HiRA->fEnergycsiCalProtons[i], HiRA->fEnergySifCal[i]);
       HiRADECALCSICALALL->Fill(HiRA->fEnergycsiCal[i], HiRA->fEnergySifCal[i]);
@@ -159,6 +163,7 @@ void E15190Reader::CreateUsefulHiRAHistograms(const char * file_name, Long64_t e
   }
 
   //Writing histograms to file
+  //FileOut->WriteTObject(HiRADERAWCSIRAW_SINGLESTRIPCSI, HiRADERAWCSIRAW_SINGLESTRIPCSI->GetName());
   FileOut->WriteTObject(HiRADECALCSICALALLPROTONS, HiRADECALCSICALALLPROTONS->GetName());
   FileOut->WriteTObject(HiRADECALCSICALALL, HiRADECALCSICALALL->GetName());
   for(int i=0; i<NUM_TEL; i++) {

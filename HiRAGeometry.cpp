@@ -63,16 +63,7 @@ int HiRAGeometry::LoadPixels(const char * file_name)
 
     LineStream >> numtel >> numstripf >> numstripb >> theta >> phi;
 
-    // Phi Corretions // TEMPORARY
-    if(phi<0) {
-      phi=-phi-180;
-    } else {
-      phi=-phi+180;
-    }
-
-    // Strip order corrections // TEMPORARY
-    numstripf=31-numstripf;
-
+    //NOTE: Theta and Phi are given in deg
     fThetaDeg[numtel][fNumStripf*numstripf+numstripb]=theta;
     fPhiDeg  [numtel][fNumStripf*numstripf+numstripb]=phi;
     fTheta   [numtel][fNumStripf*numstripf+numstripb]=theta/fRadToDeg;

@@ -70,32 +70,6 @@ void E15190Reader::BuildCalibratedEvent()
     }
   }
 
-  if(fIsVW) {
-    HTVetoWallData * VetoWall = fVetoWall->Get();
-    fVetoWallCalibratedData.fmulti=0;
-    fVetoWallCalibratedData.fidmulti=0;
-    for(int i=0; i<VetoWall->fmulti; i++)
-    {
-      if(1) {
-        fVetoWallCalibratedData.fnumbar[fVetoWallCalibratedData.fmulti]     =VetoWall->fnumbar[i];
-        fVetoWallCalibratedData.fTop[fVetoWallCalibratedData.fmulti]        =VetoWall->fTop[i];
-        fVetoWallCalibratedData.fBottom[fVetoWallCalibratedData.fmulti]     =VetoWall->fBottom[i];
-        fVetoWallCalibratedData.fTimeTop[fVetoWallCalibratedData.fmulti]    =VetoWall->fTimeTop[i];
-        fVetoWallCalibratedData.fTimeBottom[fVetoWallCalibratedData.fmulti] =VetoWall->fTimeBottom[i];
-        fVetoWallCalibratedData.fGeoMean[fVetoWallCalibratedData.fmulti]    =VetoWall->fGeoMean[i];
-        fVetoWallCalibratedData.fGeoMeanMatched[fVetoWallCalibratedData.fmulti] =GetVWGeoMeanMatched(VetoWall->fGeoMean[i], VetoWall->fnumbar[i]);
-        fVetoWallCalibratedData.fZ[fVetoWallCalibratedData.fmulti]          =-1;
-        fVetoWallCalibratedData.fA[fVetoWallCalibratedData.fmulti]          =-1;
-        fVetoWallCalibratedData.fmulti++;
-      }
-    }
-    for(int i=0; i<fVetoWallCalibratedData.fmulti; i++) {
-      if(0) {
-        fVetoWallCalibratedData.fidmulti++;
-      }
-    }
-  }
-
   if(fIsFA) {
     HTForwardArrayData * ForwardArray = fForwardArray->Get();
     fForwardArrayCalibratedData.fmulti=0;
@@ -121,6 +95,31 @@ void E15190Reader::BuildCalibratedEvent()
       }
     }
     fForwardArrayCalibratedData.fTimeMean/=tgood;
+  }
+
+  if(fIsVW) {
+    HTVetoWallData * VetoWall = fVetoWall->Get();
+    fVetoWallCalibratedData.fmulti=0;
+    for(int i=0; i<VetoWall->fmulti; i++)
+    {
+      if(1) {
+        fVetoWallCalibratedData.fnumbar[fVetoWallCalibratedData.fmulti]     =VetoWall->fnumbar[i];
+        fVetoWallCalibratedData.fTop[fVetoWallCalibratedData.fmulti]        =VetoWall->fTop[i];
+        fVetoWallCalibratedData.fBottom[fVetoWallCalibratedData.fmulti]     =VetoWall->fBottom[i];
+        fVetoWallCalibratedData.fTimeTop[fVetoWallCalibratedData.fmulti]    =VetoWall->fTimeTop[i];
+        fVetoWallCalibratedData.fTimeBottom[fVetoWallCalibratedData.fmulti] =VetoWall->fTimeBottom[i];
+        fVetoWallCalibratedData.fGeoMean[fVetoWallCalibratedData.fmulti]    =VetoWall->fGeoMean[i];
+        fVetoWallCalibratedData.fGeoMeanMatched[fVetoWallCalibratedData.fmulti] =GetVWGeoMeanMatched(VetoWall->fGeoMean[i], VetoWall->fnumbar[i]);
+        fVetoWallCalibratedData.fYcm[fVetoWallCalibratedData.fmulti]        =-9999;
+        fVetoWallCalibratedData.fTheta[fVetoWallCalibratedData.fmulti]      =GetVWTheta(VetoWall->fnumbar[i], fVetoWallCalibratedData.fYcm[fVetoWallCalibratedData.fmulti]);
+        fVetoWallCalibratedData.fPhi[fVetoWallCalibratedData.fmulti]        =GetVWPhi(VetoWall->fnumbar[i], fVetoWallCalibratedData.fYcm[fVetoWallCalibratedData.fmulti]);
+        fVetoWallCalibratedData.fThetaRan[fVetoWallCalibratedData.fmulti]   =GetVWThetaRan(VetoWall->fnumbar[i], fVetoWallCalibratedData.fYcm[fVetoWallCalibratedData.fmulti]);
+        fVetoWallCalibratedData.fPhiRan[fVetoWallCalibratedData.fmulti]     =GetVWPhiRan(VetoWall->fnumbar[i], fVetoWallCalibratedData.fYcm[fVetoWallCalibratedData.fmulti]);
+        fVetoWallCalibratedData.fDistcm[fVetoWallCalibratedData.fmulti]     =GetVWDistance(VetoWall->fnumbar[i], fVetoWallCalibratedData.fYcm[fVetoWallCalibratedData.fmulti]);
+        fVetoWallCalibratedData.fDistRancm[fVetoWallCalibratedData.fmulti]  =GetVWDistanceRan(VetoWall->fnumbar[i], fVetoWallCalibratedData.fYcm[fVetoWallCalibratedData.fmulti]);
+        fVetoWallCalibratedData.fmulti++;
+      }
+    }
   }
 
   if(fIsHiRA) {
