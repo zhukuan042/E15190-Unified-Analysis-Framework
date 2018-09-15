@@ -14,8 +14,14 @@
 int main (int argc, char ** argv)
 {
   if(argc<=1) return -1;
-  std::string data_path("/mnt/analysis/e15190/HiRAEVTMapper_rootfiles/");
-  TChain *dataChain = (TChain*) new TChain("E15190");
+
+  // Building Epxeriment Info class
+  HTExperimentInfo * ExpInfo = new HTExperimentInfo();
+  ExpInfo->InitClass("config/HiRAEVT.conf");
+
+  // Initializing input file
+  std::string data_path(ExpInfo->GetMappedRootFilePath());
+  TChain *dataChain = (TChain*) new TChain(Form("E%s",ExpInfo->GetName()));
   std::string first_run_name(argv[1]);
   int first_run = atoi(first_run_name.c_str());
   int last_run=first_run;
@@ -28,10 +34,6 @@ int main (int argc, char ** argv)
     last_run = atoi(last_run_name.c_str());
   }
 
-  // Building Epxeriment Info class
-  HTExperimentInfo * ExpInfo = new HTExperimentInfo();
-  ExpInfo->InitClass("config/HiRAEVT.conf");
-
   // Run by Run loop ////////////////////////
   for(int cur_run=first_run; cur_run<=last_run; cur_run++)
   {
@@ -42,13 +44,12 @@ int main (int argc, char ** argv)
     int n_files = dataChain->Add((data_path+file_evt).c_str());
     printf("%d Root files added to chain for run %d\n", n_files, cur_run);
     if(n_files<0) continue;
-    
-    //Building framework /////////////////
-
-    E15190Reader E15190Analyzer(dataChain);
 
     //Building HTRunInfo class ///////////
     HTRunInfo * CurrRunInfo = ExpInfo->GetRunInfo(cur_run);
+
+    //Building framework /////////////////
+    E15190Reader E15190Analyzer(dataChain, CurrRunInfo, ExpInfo->GetDetectorToAnalyze());
 
     //Exclude run if it is Junk //////////
     if(CurrRunInfo->IsJunk()) {
@@ -58,10 +59,10 @@ int main (int argc, char ** argv)
 
     //Loading calibration files //////////
     //These are loaded for the current run
-    E15190Analyzer.InitAllCalibrations(CurrRunInfo);
+    E15190Analyzer.InitAllCalibrations();
 
     //Definition of the output file //////
-    std::string FileOutName(Form("output/output_%04d.root", cur_run));
+    std::string FileOutName(Form("%soutput_%04d.root", ExpInfo->GetAnalyzedRootFilePath(), CurrRunInfo->GetRunNumber()));
 
     //Run the required method(s) /////////
     E15190Analyzer.Loop(FileOutName.c_str(), evt_amount);

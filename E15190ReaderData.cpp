@@ -1,4 +1,4 @@
-#include "include/E15190Reader.h"
+#include <E15190Reader.h>
 
 //____________________________________________________
 void E15190Reader::BuildCalibratedEvent()
@@ -207,6 +207,10 @@ void E15190Reader::BuildCalibratedEvent()
       fMicroballCalibratedData.fbhat  =GetMBbhat(fMicroballCalibratedData.fmulti);
     }
   }
+
+  if(fIsTDC) {
+    fTDCAdditionalChannels->FillOutputBranches();
+  }
 }
 
 //____________________________________________________
@@ -227,6 +231,7 @@ void E15190Reader::BuildCalibratedTree(const char * file_name, Long64_t evt_amou
   if(fIsFA) TreeOut->Branch("ForwardArray.","ForwardArrayCalibratedData",&fForwardArrayCalibratedData,32000,2);
   if(fIsMB) TreeOut->Branch("uBall.","MicroballCalibratedData",&fMicroballCalibratedData,32000,2);
   if(fIsHiRA) TreeOut->Branch("HiRA.","HiRACalibratedData",&fHiRACalibratedData,32000,2);
+  if(fIsTDC) fTDCAdditionalChannels->SetOutputTree(TreeOut);
 
   TreeOut->GetUserInfo()->Add(fBeam);
   TreeOut->GetUserInfo()->Add(fBeamEnergy);
@@ -247,104 +252,6 @@ void E15190Reader::BuildCalibratedTree(const char * file_name, Long64_t evt_amou
     }
 
     BuildCalibratedEvent();
-
-    TreeOut->Fill();
-  }
-
-  //Save Output Tree to file
-  TreeOut->AutoSave();
-
-  // closing output file
-  FileOut->Close();
-}
-
-//____________________________________________________
-void E15190Reader::BuildCosmicRayData(const char * file_name, Long64_t evt_amount)
-{
-  // this method constructs data for cosmic rays
-  // to remove the low energy noise a cut in proximity of
-  // cosmic peaks is made.
-  if(!fNWACosmicRayPositionLoaded || !fNWBCosmicRayPositionLoaded) {
-    printf("Error: Cosmic Ray position not loaded\n");
-    return;
-  }
-
-  TFile * FileOut = new TFile(file_name, "RECREATE");
-  if(FileOut->IsZombie()) {
-    printf("Error: Cannot create file %s\n", file_name);
-    return;
-  }
-
-  // Initializing output TTree
-  TTree * TreeOut = new TTree ("E15190", "NW Cosmic Ray Tree");
-  if(fIsNWA) TreeOut->Branch("NWA.","NeutronWallCalibratedData",&fNWACalibratedData,32000,2);
-  if(fIsNWB) TreeOut->Branch("NWB.","NeutronWallCalibratedData",&fNWBCalibratedData,32000,2);
-  TreeOut->SetAutoSave(5000000);
-
-  Long64_t nentries=fChain->GetEntries();
-  if(evt_amount!=0) {
-    nentries=evt_amount;
-  }
-  Long64_t jentry=0;
-  std::cout << "found " << nentries << " entries\n";
-  for(;fE15190Reader->Next() && jentry<nentries; jentry++)
-  {
-    if(jentry%100000==0) {
-      PrintPercentage(jentry,nentries);
-    }
-
-    if(fIsNWA) {
-      HTNeutronWallData * NWA = fNWA->Get();
-      //Filling calibrated data structures
-      fNWACalibratedData.fmulti=0;
-      for(int i=0; i<NWA->fmulti; i++)
-      {
-        if(NWA->fGeoMean[i]>GetNWACosmicStartingPoint(NWA->fnumbar[i])) {
-          fNWACalibratedData.fnumbar[fNWACalibratedData.fmulti]      =NWA->fnumbar[i];
-          fNWACalibratedData.fLeft[fNWACalibratedData.fmulti]        =NWA->fLeft[i];
-          fNWACalibratedData.fRight[fNWACalibratedData.fmulti]       =NWA->fRight[i];
-          fNWACalibratedData.ffastLeft[fNWACalibratedData.fmulti]    =NWA->ffastLeft[i];
-          fNWACalibratedData.ffastRight[fNWACalibratedData.fmulti]   =NWA->ffastRight[i];
-          fNWACalibratedData.fTimeLeft[fNWACalibratedData.fmulti]    =NWA->fTimeLeft[i];
-          fNWACalibratedData.fTimeRight[fNWACalibratedData.fmulti]   =NWA->fTimeRight[i];
-          fNWACalibratedData.fGeoMean[fNWACalibratedData.fmulti]     =NWA->fGeoMean[i];
-          fNWACalibratedData.ffastGeoMean[fNWACalibratedData.fmulti] =NWA->ffastGeoMean[i];
-          fNWACalibratedData.fTimeMean[fNWACalibratedData.fmulti]    =GetNWATimeMean(NWA->fnumbar[i],NWA->fTimeLeft[i],NWA->fTimeRight[i]);
-          fNWACalibratedData.fCalGeoMean[fNWACalibratedData.fmulti]  =-9999;
-          fNWACalibratedData.fMatchedLeft[fNWACalibratedData.fmulti] =GetNWALeftMatched(NWA->fLeft[i], NWA->fnumbar[i]);
-          fNWACalibratedData.fMatchedRight[fNWACalibratedData.fmulti]=GetNWARightMatched(NWA->fRight[i], NWA->fnumbar[i]);
-          fNWACalibratedData.fMatchedGeoMean[fNWACalibratedData.fmulti]=sqrt(fNWACalibratedData.fMatchedLeft[fNWACalibratedData.fmulti]*fNWACalibratedData.fMatchedRight[fNWACalibratedData.fmulti]);
-          fNWACalibratedData.fXcm[fNWACalibratedData.fmulti]         =GetNWAXcm(NWA->fnumbar[i],NWA->fTimeLeft[i],NWA->fTimeRight[i]);
-          fNWACalibratedData.fmulti++;
-        }
-      }
-    }
-
-    if(fIsNWB) {
-      HTNeutronWallData * NWB = fNWB->Get();
-      fNWBCalibratedData.fmulti=0;
-      for(int i=0; i<NWB->fmulti; i++)
-      {
-        if(NWB->fGeoMean[i]>GetNWBCosmicStartingPoint(NWB->fnumbar[i])) {
-          fNWBCalibratedData.fnumbar[fNWBCalibratedData.fmulti]      =NWB->fnumbar[i];
-          fNWBCalibratedData.fLeft[fNWBCalibratedData.fmulti]        =NWB->fLeft[i];
-          fNWBCalibratedData.fRight[fNWBCalibratedData.fmulti]       =NWB->fRight[i];
-          fNWBCalibratedData.ffastLeft[fNWBCalibratedData.fmulti]    =NWB->ffastLeft[i];
-          fNWBCalibratedData.ffastRight[fNWBCalibratedData.fmulti]   =NWB->ffastRight[i];
-          fNWBCalibratedData.fTimeLeft[fNWBCalibratedData.fmulti]    =NWB->fTimeLeft[i];
-          fNWBCalibratedData.fTimeRight[fNWBCalibratedData.fmulti]   =NWB->fTimeRight[i];
-          fNWBCalibratedData.fGeoMean[fNWBCalibratedData.fmulti]     =NWB->fGeoMean[i];
-          fNWBCalibratedData.ffastGeoMean[fNWBCalibratedData.fmulti] =NWB->ffastGeoMean[i];
-          fNWBCalibratedData.fTimeMean[fNWBCalibratedData.fmulti]    =GetNWBTimeMean(NWB->fnumbar[i],NWB->fTimeLeft[i],NWB->fTimeRight[i]);
-          fNWBCalibratedData.fCalGeoMean[fNWBCalibratedData.fmulti]  =-9999;
-          fNWBCalibratedData.fMatchedLeft[fNWBCalibratedData.fmulti] =GetNWBLeftMatched(NWB->fLeft[i], NWB->fnumbar[i]);
-          fNWBCalibratedData.fMatchedRight[fNWBCalibratedData.fmulti]=GetNWBRightMatched(NWB->fRight[i], NWB->fnumbar[i]);
-          fNWBCalibratedData.fMatchedGeoMean[fNWBCalibratedData.fmulti]=sqrt(fNWBCalibratedData.fMatchedLeft[fNWBCalibratedData.fmulti]*fNWBCalibratedData.fMatchedRight[fNWBCalibratedData.fmulti]);
-          fNWBCalibratedData.fXcm[fNWBCalibratedData.fmulti]         =GetNWBXcm(NWB->fnumbar[i],NWB->fTimeLeft[i],NWB->fTimeRight[i]);
-          fNWBCalibratedData.fmulti++;
-        }
-      }
-    }
 
     TreeOut->Fill();
   }

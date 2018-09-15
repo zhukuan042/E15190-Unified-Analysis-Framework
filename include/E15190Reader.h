@@ -22,6 +22,8 @@
 #include <TLatex.h>
 #include <TCanvas.h>
 
+#include <TDCSpareChannels.h>
+
 #include <HTNeutronWallRootEvent.h>
 #include <HTForwardArrayRootEvent.h>
 #include <HTVetoWallRootEvent.h>
@@ -54,7 +56,7 @@
 #include <HiRAIdentification.h>
 #include <HiRAPixelization.h>
 
-#include "shared.h"
+#include <shared.h>
 
 /**************************************
 E15190Reader class
@@ -72,10 +74,10 @@ To get calibrated data structure for the current event use the method BuildCalib
 class E15190Reader
 {
 public :
-  E15190Reader(TChain *, const char * opt="HiRA NWA NWB VW FA uBall", bool IsDataCalibrated=0);
+  E15190Reader(TChain *, HTRunInfo *, const char * opt="HiRA-NWA-NWB-VW-FA-uBall-TDC", bool IsDataCalibrated=0);
   ~E15190Reader();
 
-  void InitAllCalibrations(HTRunInfo * );
+  void InitAllCalibrations();
 
   int LoadNWPositionCalibration(const char * file_name, const char * WallToCalibrate);
   int LoadNWTimeCalibration(const char * file_name, const char * WallToCalibrate);
@@ -172,7 +174,6 @@ public :
   void   LoopOnCalibratedData(const char *, Long64_t evt_amount=0);
 
   // Output data methods
-  void   BuildCosmicRayData(const char *, Long64_t evt_amount=0);
   void   BuildCalibratedTree(const char *, Long64_t evt_amount=0);
   void   BuildCalibratedEvent();
 
@@ -183,8 +184,12 @@ public :
   void   CreateUsefulHiRAHistograms(const char *, Long64_t evt_amount=0);
 
 private :
+  //The Run Info
+  HTRunInfo * fCurrRunInfo;
   //The TTreeReader
   TTreeReader * fE15190Reader;
+  //TDC Spare channels
+  TDCSpareChannels * fTDCAdditionalChannels;
   //TTreeReaderValue for non-calibrated classes
   TTreeReaderValue<HTNeutronWallData> *fNWA;
   TTreeReaderValue<HTNeutronWallData> *fNWB;
@@ -222,6 +227,7 @@ private :
   double fNWBarHigh;       //cm
   double fNWBarThickness;  //cm
 
+  bool fIsTDC;
   bool fIsNWA;
   bool fIsNWB;
   bool fIsFA;

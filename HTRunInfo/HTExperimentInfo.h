@@ -43,6 +43,8 @@ public:
   const char * GetEvtFilePath() const;            //!
   const char * GetRootFilePath() const;           //!
   const char * GetMappedRootFilePath() const;     //!
+  const char * GetAnalyzedRootFilePath() const;   //!
+  const char * GetDetectorToAnalyze() const;      //!
 
   void Clear();                                   //!
 
@@ -69,7 +71,7 @@ private:
   std::string * fFAPulseHeightCorrectionFileName;
   std::string * fVWGainMatchingCalibrationFileName;
   std::string * fVWDETOFPIDCalibrationFileName;
-  std::string * fVWGeometryFileName;  
+  std::string * fVWGeometryFileName;
   std::string * fMBDetectorStatusFileName;
   std::string * fMBGeometryFileName;
   std::string * fMBImpactParameterFileName;
@@ -89,6 +91,8 @@ private:
   std::string fEvtFilePath;
   std::string fUnpackedRootFilePath;
   std::string fMappedRootFilePath;
+  std::string fAnalyzedRootFilePath;
+  std::string fDetectorToAnalyze;
 
   int fFirstRun;
   int fLastRun;

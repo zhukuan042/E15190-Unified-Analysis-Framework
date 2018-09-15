@@ -22,6 +22,7 @@ OBJS += HiRAPixelization.$(ObjSuf) HiRAIdentification.$(ObjSuf) elist.$(ObjSuf) 
 OBJS += HiRACalibratedRootEvent.$(ObjSuf)
 OBJS += HTRunInfo.$(ObjSuf) HTDAQStackInfo.$(ObjSuf) HTExperimentInfo.$(ObjSuf) HTModuleInfo.$(ObjSuf)
 OBJS += VWPulseHeightCalibration.$(ObjSuf) VWIdentification.$(ObjSuf) VWGeometry.$(ObjSuf)
+OBJS += TDCSpareChannels.$(ObjSuf)
 OBJS := $(addprefix $(ObjDir), $(OBJS))
 
 RLIBS := -L./$(LibDir)

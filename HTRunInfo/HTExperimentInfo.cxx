@@ -277,6 +277,10 @@ void HTExperimentInfo::ParseSetConfigLine(const char *line_to_parse)
     fUnpackedRootFilePath.assign(NewValue);
   } else if (ValueToSet.compare("HiRAEVTMAPPER_ROOT_FILE_PATH")==0) {
     fMappedRootFilePath.assign(NewValue);
+  } else if (ValueToSet.compare("ANALYSISFRAMEWORK_ROOT_FILE_PATH")==0) {
+    fAnalyzedRootFilePath.assign(NewValue);
+  } else if (ValueToSet.compare("DETECTOR_TO_ANALYZE")==0) {
+    fDetectorToAnalyze.assign(NewValue);
   }
 
   return;
@@ -471,6 +475,18 @@ const char * HTExperimentInfo::GetRootFilePath() const
 const char * HTExperimentInfo::GetMappedRootFilePath() const
 {
   return fMappedRootFilePath.c_str();
+}
+
+//________________________________________________
+const char * HTExperimentInfo::GetAnalyzedRootFilePath() const
+{
+  return fAnalyzedRootFilePath.c_str();
+}
+
+//________________________________________________
+const char * HTExperimentInfo::GetDetectorToAnalyze() const
+{
+  return fDetectorToAnalyze.c_str();
 }
 
 //________________________________________________

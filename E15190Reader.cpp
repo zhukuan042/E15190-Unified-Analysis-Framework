@@ -1,7 +1,8 @@
 #include "include/E15190Reader.h"
 
 //____________________________________________________
-E15190Reader::E15190Reader(TChain * Chain, const char * DataType, bool IsDataCalibrated) :
+E15190Reader::E15190Reader(TChain * Chain, HTRunInfo * CurrRunInfo, const char * DataType, bool IsDataCalibrated) :
+fCurrRunInfo(CurrRunInfo),
 fHiRA(new TTreeReaderValue<HTHiRAData> *[NUM_TEL]),
 fChain(Chain),
 fDegToRad(TMath::Pi()/180.),
@@ -10,6 +11,7 @@ fSpeedOfLight(29.9792),
 fNWBarLength(200),
 fNWBarHigh(7.62),
 fNWBarThickness(6.35),
+fIsTDC(false),
 fIsNWA(false),
 fIsNWB(false),
 fIsFA(false),
@@ -73,13 +75,14 @@ fHiRAPixelizationModule(new HiRAPixelization(NUM_TEL))
   std::string DetectorsIncluded(DataType);
   std::istringstream StreamDetectorsIncluded(DetectorsIncluded);
   std::string DetectorToAdd;
-  while (StreamDetectorsIncluded>>DetectorToAdd) {
+  while(std::getline(StreamDetectorsIncluded, DetectorToAdd, '-')) {
     if(DetectorToAdd.compare("NWA")==0) fIsNWA=true;
     if(DetectorToAdd.compare("NWB")==0) fIsNWB=true;
     if(DetectorToAdd.compare("FA")==0) fIsFA=true;
     if(DetectorToAdd.compare("VW")==0) fIsVW=true;
     if(DetectorToAdd.compare("uBall")==0) fIsMB=true;
     if(DetectorToAdd.compare("HiRA")==0) fIsHiRA=true;
+    if(DetectorToAdd.compare("TDC")==0) fIsTDC=true;
   }
 
   if(fChain!=0) {
@@ -100,6 +103,11 @@ fHiRAPixelizationModule(new HiRAPixelization(NUM_TEL))
       if(fIsVW) fVetoWallCal = new TTreeReaderValue<VetoWallCalibratedData>(*fE15190Reader, "VetoWall.");
       if(fIsMB) fMicroballCal = new TTreeReaderValue<MicroballCalibratedData>(*fE15190Reader, "uBall.");
       if(fIsHiRA) fHiRACal = new TTreeReaderValue<HiRACalibratedData>(*fE15190Reader, "HiRA.");
+    }
+
+    if(fIsTDC) {
+      fTDCAdditionalChannels = new TDCSpareChannels();
+      fTDCAdditionalChannels->InitFromMapping(fE15190Reader, fCurrRunInfo->GetMappingFile());
     }
   }
 }
@@ -132,35 +140,35 @@ E15190Reader::~E15190Reader()
 }
 
 //____________________________________________________
-void E15190Reader::InitAllCalibrations(HTRunInfo * CurrRunInfo)
+void E15190Reader::InitAllCalibrations()
 {
-  LoadNWPositionCalibration(CurrRunInfo->GetNWBPositionCalibrationFileName(), "NWB");
-  LoadNWPositionCalibration(CurrRunInfo->GetNWAPositionCalibrationFileName(), "NWA");
-  LoadNWGeometryFiducialPoints(CurrRunInfo->GetNWBGeometryCalibrationFileName(), "NWB");
-  LoadNWGeometryFiducialPoints(CurrRunInfo->GetNWAGeometryCalibrationFileName(), "NWA");
-  LoadNWTimeCalibration(CurrRunInfo->GetNWBTimeOffsetCalibrationFileName(), "NWB");
-  LoadNWPulseHeightMatching(CurrRunInfo->GetNWBGainMatchingCalibrationFileName(), "NWB");
-  LoadNWPulseHeightMatching(CurrRunInfo->GetNWAGainMatchingCalibrationFileName(), "NWA");
-  LoadFATimeCalibration(CurrRunInfo->GetFATimeCalibrationFileName());
-  LoadFATimePulseHeightCorrection(CurrRunInfo->GetFAPulseHeightCorrectionFileName());
-  LoadVWGainMatchig(CurrRunInfo->GetVWGainMatchingCalibrationFileName());
-  LoadVWIdentificationCuts(CurrRunInfo->GetVWDETOFPIDCalibrationFileName());
-  LoadVWGeometryFiducialPoints(CurrRunInfo->GetVWGeometryFileName());
-  LoadMBGeometry(CurrRunInfo->GetMBGeometryFileName());
-  LoadMBDetectorStatus(CurrRunInfo->GerMBDetectorStatusFileName());
-  LoadMBFastSlowHitCondition(CurrRunInfo->GetMBHitConditionFileName());
-  LoadMBCentrality(CurrRunInfo->GetMBImpactParameterFileName());
-  LoadHiRAGeometry(CurrRunInfo->GetHiRAGeometryFileName());
-  LoadHiRASiCalibration(CurrRunInfo->GetHiRASiEnergyCalibrationFileName());
-  LoadHiRAStripBad(CurrRunInfo->GetHiRADetectorStatusFileName());
-  LoadHiRACsIPulserInfo(CurrRunInfo->GetHiRACsIPulserFileName());
-  LoadHiRASiHiLowMatching(CurrRunInfo->GetHiRASiHiLowMatchingFileName());
-  LoadHiRACsICalibration(CurrRunInfo->GetHiRACsIEnergyCalibrationFileName());
-  LoadHiRAIdentification(CurrRunInfo->GetHiRAPIDFileName());
+  LoadNWPositionCalibration(fCurrRunInfo->GetNWBPositionCalibrationFileName(), "NWB");
+  LoadNWPositionCalibration(fCurrRunInfo->GetNWAPositionCalibrationFileName(), "NWA");
+  LoadNWGeometryFiducialPoints(fCurrRunInfo->GetNWBGeometryCalibrationFileName(), "NWB");
+  LoadNWGeometryFiducialPoints(fCurrRunInfo->GetNWAGeometryCalibrationFileName(), "NWA");
+  LoadNWTimeCalibration(fCurrRunInfo->GetNWBTimeOffsetCalibrationFileName(), "NWB");
+  LoadNWPulseHeightMatching(fCurrRunInfo->GetNWBGainMatchingCalibrationFileName(), "NWB");
+  LoadNWPulseHeightMatching(fCurrRunInfo->GetNWAGainMatchingCalibrationFileName(), "NWA");
+  LoadFATimeCalibration(fCurrRunInfo->GetFATimeCalibrationFileName());
+  LoadFATimePulseHeightCorrection(fCurrRunInfo->GetFAPulseHeightCorrectionFileName());
+  LoadVWGainMatchig(fCurrRunInfo->GetVWGainMatchingCalibrationFileName());
+  LoadVWIdentificationCuts(fCurrRunInfo->GetVWDETOFPIDCalibrationFileName());
+  LoadVWGeometryFiducialPoints(fCurrRunInfo->GetVWGeometryFileName());
+  LoadMBGeometry(fCurrRunInfo->GetMBGeometryFileName());
+  LoadMBDetectorStatus(fCurrRunInfo->GerMBDetectorStatusFileName());
+  LoadMBFastSlowHitCondition(fCurrRunInfo->GetMBHitConditionFileName());
+  LoadMBCentrality(fCurrRunInfo->GetMBImpactParameterFileName());
+  LoadHiRAGeometry(fCurrRunInfo->GetHiRAGeometryFileName());
+  LoadHiRASiCalibration(fCurrRunInfo->GetHiRASiEnergyCalibrationFileName());
+  LoadHiRAStripBad(fCurrRunInfo->GetHiRADetectorStatusFileName());
+  LoadHiRACsIPulserInfo(fCurrRunInfo->GetHiRACsIPulserFileName());
+  LoadHiRASiHiLowMatching(fCurrRunInfo->GetHiRASiHiLowMatchingFileName());
+  LoadHiRACsICalibration(fCurrRunInfo->GetHiRACsIEnergyCalibrationFileName());
+  LoadHiRAIdentification(fCurrRunInfo->GetHiRAPIDFileName());
 
-  fBeam = new TNamed("Beam", CurrRunInfo->GetBeam());
-  fBeamEnergy = new TNamed("Beam Energy (AMeV)", CurrRunInfo->GetBeamEnergy());
-  fTarget = new TNamed("Target", CurrRunInfo->GetTarget());
+  fBeam = new TNamed("Beam", fCurrRunInfo->GetBeam());
+  fBeamEnergy = new TNamed("Beam Energy (AMeV)", fCurrRunInfo->GetBeamEnergy());
+  fTarget = new TNamed("Target", fCurrRunInfo->GetTarget());
 }
 
 
@@ -985,6 +993,10 @@ void E15190Reader::Loop(const char * file_name, Long64_t evt_amount)
       }
       //Insert HiRA code here
     }
+    if (fIsTDC) {
+      fTDCAdditionalChannels->FillOutputBranches();
+      //Insert TDC spare channels code here. EX: To retrieve TDCTriggers.MASTER_TRG do fTDCAdditionalChannels->GetBranchValue("TDCTriggers.MASTER_TRG");
+    }
 
     jentry++;
   }
@@ -1036,6 +1048,10 @@ void E15190Reader::LoopOnCalibratedData(const char * file_name, Long64_t evt_amo
     if (fIsHiRA) {
       HiRACalibratedData * HiRA = fHiRACal->Get();
       //Insert HiRA code here
+    }
+    if (fIsTDC) {
+      fTDCAdditionalChannels->FillOutputBranches();
+      //Insert TDC spare channels code here. EX: To retrieve TDCTriggers.MASTER_TRG do fTDCAdditionalChannels->GetBranchValue("TDCTriggers.MASTER_TRG");
     }
 
     jentry++;
