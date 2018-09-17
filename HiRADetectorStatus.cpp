@@ -53,9 +53,9 @@ int HiRADetectorStatus::LoadStipBad(const char * file_name)
 
     LineStream >> striptype >> numtel >> numstrip >> isbad;
 
-    if(striptype==0) {
+    if(striptype==1) {
       fStripbBad[numtel][numstrip]=bool(isbad);
-    } else if(striptype==1) {
+    } else if(striptype==0) {
       fStripfBad[numtel][numstrip]=bool(isbad);
     }
 
