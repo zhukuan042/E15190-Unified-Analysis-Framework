@@ -43,10 +43,11 @@ int main (int argc, char ** argv)
     std::string path_to_evt_file(data_path+file_evt_string);
     int n_files = dataChain->Add((data_path+file_evt).c_str());
     printf("%d Root files added to chain for run %d\n", n_files, cur_run);
-    if(n_files<0) continue;
+    if(n_files<=0) continue;
 
     //Building HTRunInfo class ///////////
     HTRunInfo * CurrRunInfo = ExpInfo->GetRunInfo(cur_run);
+    printf("Run Title: %s\nBeam: %s@%sMeV/u\nTarget: %s\n", CurrRunInfo->GetTitle(),CurrRunInfo->GetBeam(),CurrRunInfo->GetBeamEnergy(),CurrRunInfo->GetTarget());
 
     //Building framework /////////////////
     E15190Reader E15190Analyzer(dataChain, CurrRunInfo, ExpInfo->GetDetectorToAnalyze());

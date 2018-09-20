@@ -151,7 +151,7 @@ void E15190Reader::CreateUsefulHiRAHistograms(const char * file_name, Long64_t e
     HiRACalibratedData * HiRA = fHiRACal->Get();
 
     for(int i=0; i< HiRA->fmulti; i++) {
-
+      
       //if(HiRA->fnumtel[i]==0 && HiRA->fnumcsi[i]==0 && HiRA->fnumstripf[i]==5) HiRADERAWCSIRAW_SINGLESTRIPCSI->Fill(HiRA->fEnergycsi[i], HiRA->fEnergySifHi[i]);
 
       HiRADECALCSICALALLPROTONS->Fill(HiRA->fEnergycsiCalProtons[i], HiRA->fEnergySifCal[i]);

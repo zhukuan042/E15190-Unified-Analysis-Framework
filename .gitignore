@@ -11,3 +11,5 @@ slurm/slurm.folder
 slurm/slurm.folder
 slurm/slurm.folder
 slurm/slurm.folder
+exec_CreateUsefulHiRAHistograms
+exec_CreateUsefulHiRAHistograms.cpp

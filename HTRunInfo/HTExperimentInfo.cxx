@@ -351,9 +351,9 @@ void HTExperimentInfo::ParseSetConfigLineRunInfo(const char *line_to_parse, int 
       }
     }
 
-  if(ValueToSet.compare("EXPERIMENT_INFO")!=0 && RunFound) {
-    NewValue.assign(LineToParse.substr(LineToParse.find("\"")+1,LineToParse.find_last_of("\"")-(LineToParse.find("\"")+1)));
-  } else if(ValueToSet.compare("EXPERIMENT_INFO")!=0) return;
+  if(!RunFound) return;
+
+  NewValue.assign(LineToParse.substr(LineToParse.find("\"")+1,LineToParse.find_last_of("\"")-(LineToParse.find("\"")+1)));
 
   // if I'm here so run_num has been found in the configuration line
   if(ValueToSet.compare("DAQ_CONFIG")==0) {
