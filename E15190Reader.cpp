@@ -33,6 +33,10 @@ fNWAPulseHeightMatched(false),
 fNWBPulseHeightMatched(false),
 fNWAPulseHeightCalibrated(false),
 fNWBPulseHeightCalibrated(false),
+fNWAPSDFlattened(false),
+fNWBPSDFlattened(false),
+fNWAPSDCutsLoaded(false),
+fNWBPSDCutsLoaded(false),
 fFATimeCalibrated(false),
 fVWGainMatched(false),
 fVWIdentificationLoaded(false),
@@ -56,6 +60,8 @@ fNWAGeometry(new NWGeometry(NUM_BARS_NWA)),
 fNWBGeometry(new NWGeometry(NUM_BARS_NWB)),
 fNWAPulseHeightCalibrationTools(new NWPulseHeightCalibration(NUM_BARS_NWA)),
 fNWBPulseHeightCalibrationTools(new NWPulseHeightCalibration(NUM_BARS_NWB)),
+fNWAPulseShapeDiscriminationTools(new NWPulseShapeDiscrimination(NUM_BARS_NWA)),
+fNWBPulseShapeDiscriminationTools(new NWPulseShapeDiscrimination(NUM_BARS_NWB)),
 fFATimeCalibration(new FATimeCalibration(NUM_DETECTORS_FA)),
 fVWPulseHeightCalibrationTools(new VWPulseHeightCalibration(NUM_BARS_VW)),
 fVWIdentificationModule(new VWIdentification()),
@@ -149,6 +155,12 @@ void E15190Reader::InitAllCalibrations()
   LoadNWTimeCalibration(fCurrRunInfo->GetNWBTimeOffsetCalibrationFileName(), "NWB");
   LoadNWPulseHeightMatching(fCurrRunInfo->GetNWBGainMatchingCalibrationFileName(), "NWB");
   LoadNWPulseHeightMatching(fCurrRunInfo->GetNWAGainMatchingCalibrationFileName(), "NWA");
+  LoadNWPulseHeightCalibration(fCurrRunInfo->GetNWBPulseHeightCalibrationFileName(), "NWB");//KZ
+  LoadNWPulseHeightCalibration(fCurrRunInfo->GetNWAPulseHeightCalibrationFileName(), "NWA");//KZ
+  LoadNWPSDFlattening(fCurrRunInfo->GetNWBPSDFlatteningFileName(), "NWB");//KZ
+  LoadNWPSDFlattening(fCurrRunInfo->GetNWAPSDFlatteningFileName(), "NWA");//KZ
+  LoadNWPSDCuts(fCurrRunInfo->GetNWBPSDCutsFileName(),"NWB"); //KZ
+  LoadNWPSDCuts(fCurrRunInfo->GetNWAPSDCutsFileName(),"NWA"); //KZ
   LoadFATimeCalibration(fCurrRunInfo->GetFATimeCalibrationFileName());
   LoadFATimePulseHeightCorrection(fCurrRunInfo->GetFAPulseHeightCorrectionFileName());
   LoadVWGainMatchig(fCurrRunInfo->GetVWGainMatchingCalibrationFileName());
@@ -309,6 +321,89 @@ int E15190Reader::LoadNWPulseHeightMatching(const char * file_name, const char *
   }
 
   printf("Error: Error while loading NW gain matching %s\n", file_name);
+  return -1;
+}
+//K____________________________________________________
+int E15190Reader::LoadNWPulseHeightCalibration(const char * file_name, const char * WallToCalibrate)
+{
+  if(strcmp(WallToCalibrate,"NWA")==0) {
+    if(!fIsNWA) return 0;
+    int NLines=fNWAPulseHeightCalibrationTools->LoadPulseHeightCalibration(file_name);
+    if(NLines>0) {
+      fNWAPulseHeightCalibrated=true;
+      printf("Loaded pulse height calibration for NWA %s\n", file_name);
+      return NLines;
+    }
+    fNWAPulseHeightCalibrated=false;
+  }
+  if(strcmp(WallToCalibrate,"NWB")==0) {
+    if(!fIsNWB) return 0;
+    int NLines=fNWBPulseHeightCalibrationTools->LoadPulseHeightCalibration(file_name);
+    if(NLines>0) {
+      fNWBPulseHeightCalibrated=true;
+      printf("Loaded pulse height calibration for NWB %s\n", file_name);
+      return NLines;
+    }
+    fNWBPulseHeightCalibrated=false;
+  }
+
+  printf("Error: Error while loading NW pulse height calibration %s\n", file_name);
+  return -1;
+}
+
+//K____________________________________________________
+int E15190Reader::LoadNWPSDFlattening(const char * file_name, const char * WallToCalibrate)
+{
+  if(strcmp(WallToCalibrate,"NWA")==0) {
+    if(!fIsNWA) return 0;
+    int NLines=fNWAPulseShapeDiscriminationTools->LoadPSDFlattening(file_name);
+    if(NLines>0) {
+      fNWAPSDFlattened=true;
+      printf("Loaded PSD Flattening info for NWA %s\n", file_name);
+      return NLines;
+    }
+    fNWAPSDFlattened=false;
+  }
+  if(strcmp(WallToCalibrate,"NWB")==0) {
+    if(!fIsNWB) return 0;
+    int NLines=fNWBPulseShapeDiscriminationTools->LoadPSDFlattening(file_name);
+    if(NLines>0) {
+      fNWBPSDFlattened=true;
+      printf("Loaded PSD Flattening info for NWB %s\n", file_name);
+      return NLines;
+    }
+    fNWBPSDFlattened=false;
+  }
+
+  printf("Error: Error while loading NW PSD flattening info %s\n", file_name);
+  return -1;
+}
+
+//K____________________________________________________
+int E15190Reader::LoadNWPSDCuts(const char * file_name, const char * WallToCalibrate)
+{
+  if(strcmp(WallToCalibrate,"NWA")==0) {
+    if(!fIsNWA) return 0;
+    int NLines=fNWAPulseShapeDiscriminationTools->LoadIsGammaCuts(file_name);
+    if(NLines>0) {
+      fNWAPSDCutsLoaded=true;
+      printf("Loaded IsGamma Cuts info for NWA %s\n", file_name);
+      return NLines;
+    }
+    fNWAPSDCutsLoaded=false;
+  }
+  if(strcmp(WallToCalibrate,"NWB")==0) {
+    if(!fIsNWB) return 0;
+    int NLines=fNWBPulseShapeDiscriminationTools->LoadIsGammaCuts(file_name);
+    if(NLines>0) {
+      fNWBPSDCutsLoaded=true;
+      printf("Loaded IsGamma Cuts info for NWB %s\n", file_name);
+      return NLines;
+    }
+    fNWBPSDCutsLoaded=false;
+  }
+
+  printf("Error: Error while loading NW IsGamma Cuts %s\n", file_name);
   return -1;
 }
 
@@ -540,6 +635,42 @@ double E15190Reader::GetNWBLeftMatched(double ch, int num_bar) const
 double E15190Reader::GetNWBRightMatched(double ch, int num_bar) const
 {
   return fNWBPulseHeightMatched ? fNWBPulseHeightCalibrationTools->GetRightMatched(ch, num_bar) : -9999;
+}
+
+//KZ____________________________________________________
+double E15190Reader::GetNWAPulseHeightCalibrated(double ch, double Xcm, int num_bar) const
+{
+  return fNWAPulseHeightCalibrated ? fNWAPulseHeightCalibrationTools->GetPulseHeightCalibrated(ch, Xcm, num_bar) : -9999;
+}
+
+//KZ____________________________________________________
+double E15190Reader::GetNWBPulseHeightCalibrated(double ch, double Xcm, int num_bar) const
+{
+  return fNWBPulseHeightCalibrated ? fNWBPulseHeightCalibrationTools->GetPulseHeightCalibrated(ch, Xcm, num_bar) : -9999;
+}
+
+//KZ____________________________________________________
+double E15190Reader::GetNWAPSDFlattened(double ch, double ch_fast, int num_bar) const
+{
+  return fNWAPSDFlattened ? fNWAPulseShapeDiscriminationTools->GetPSDFlattened(ch, ch_fast, num_bar) : -9999;
+}
+
+//KZ____________________________________________________
+double E15190Reader::GetNWBPSDFlattened(double ch, double ch_fast, int num_bar) const
+{
+  return fNWBPSDFlattened ? fNWBPulseShapeDiscriminationTools->GetPSDFlattened(ch, ch_fast, num_bar) : -9999;
+}
+
+//KZ____________________________________________________
+bool E15190Reader::IsNWAGamma(double ch, double ch_fast, int num_bar) const
+{
+  return fNWAPSDFlattened&&fNWAPSDCutsLoaded ? fNWAPulseShapeDiscriminationTools->IsGamma(ch, ch_fast, num_bar) : true;
+}
+
+//KZ____________________________________________________
+bool E15190Reader::IsNWBGamma(double ch, double ch_fast, int num_bar) const
+{
+  return fNWBPSDFlattened&&fNWBPSDCutsLoaded ? fNWBPulseShapeDiscriminationTools->IsGamma(ch, ch_fast, num_bar) : true;
 }
 
 //____________________________________________________

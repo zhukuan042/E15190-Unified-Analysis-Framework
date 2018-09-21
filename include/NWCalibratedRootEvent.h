@@ -22,6 +22,7 @@ public:
   Double_t *fMatchedLeft; //[fmulti]
   Double_t *fMatchedRight;//[fmulti]
   Double_t *fMatchedGeoMean;//[fmulti]
+  Double_t *fFlattenedGeoMean;//[fmulti]
   Double_t *fTheta;       //[fmulti]
   Double_t *fPhi;         //[fmulti]
   Double_t *fThetaRan;    //[fmulti]

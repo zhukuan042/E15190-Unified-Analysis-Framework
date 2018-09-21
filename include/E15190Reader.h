@@ -39,6 +39,7 @@
 #include <NWGeometry.h>
 #include <FATimeCalibration.h>
 #include <NWPulseHeightCalibration.h>
+#include <NWPulseShapeDiscrimination.h>
 #include <VWPulseHeightCalibration.h>
 #include <VWIdentification.h>
 #include <VWGeometry.h>
@@ -85,6 +86,8 @@ public :
   int LoadNWGeometryFiducialPoints(const char *, const char * WallToCalibrate);
   int LoadNWPulseHeightMatching(const char *, const char * WallToCalibrate);
   int LoadNWPulseHeightCalibration(const char *, const char * WallToCalibrate);
+  int LoadNWPSDFlattening(const char *, const char * WallToCalibrate);
+  int LoadNWPSDCuts(const char *, const char * WallToCalibrate);
   int LoadFATimeCalibration(const char * file_name);
   int LoadFATimePulseHeightCorrection(const char * file_name);
   int LoadVWGainMatchig(const char * file_name);
@@ -127,6 +130,12 @@ public :
   double GetNWARightMatched(double ch, int num_bar) const;
   double GetNWBLeftMatched(double ch, int num_bar) const;
   double GetNWBRightMatched(double ch, int num_bar) const;
+  double GetNWAPulseHeightCalibrated(double ch, double Xcm, int num_bar) const;
+  double GetNWBPulseHeightCalibrated(double ch, double Xcm, int num_bar) const;
+  double GetNWAPSDFlattened(double ch, double ch_fast, int num_bar) const;
+  double GetNWBPSDFlattened(double ch, double ch_fast, int num_bar) const;
+  bool   IsNWAGamma(double ch, double ch_fast, int numbar) const;
+  bool   IsNWBGamma(double ch, double ch_fast, int numbar) const;
   double GetFATimeOffset(int num_det) const;
   double GetFATimePulseHeightCorrection(int num_det, double pulse_height) const;
   double GetVWGeoMeanMatched(double ch, int num_bar) const;
@@ -249,6 +258,10 @@ private :
   bool fNWBPulseHeightMatched;
   bool fNWAPulseHeightCalibrated;
   bool fNWBPulseHeightCalibrated;
+  bool fNWAPSDFlattened;
+  bool fNWBPSDFlattened;
+  bool fNWAPSDCutsLoaded;
+  bool fNWBPSDCutsLoaded;
   bool fFATimeCalibrated;
   bool fVWGainMatched;
   bool fVWIdentificationLoaded;
@@ -275,6 +288,8 @@ private :
   NWGeometry            * fNWBGeometry;
   NWPulseHeightCalibration * fNWAPulseHeightCalibrationTools;
   NWPulseHeightCalibration * fNWBPulseHeightCalibrationTools;
+  NWPulseShapeDiscrimination * fNWAPulseShapeDiscriminationTools;
+  NWPulseShapeDiscrimination * fNWBPulseShapeDiscriminationTools;
   FATimeCalibration        * fFATimeCalibration;
   VWPulseHeightCalibration * fVWPulseHeightCalibrationTools;
   VWIdentification         * fVWIdentificationModule;

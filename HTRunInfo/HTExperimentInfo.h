@@ -65,8 +65,14 @@ private:
   std::string * fNWBTimeOffsetCalibrationFileName;
   std::string * fNWAGainMatchingCalibrationFileName;
   std::string * fNWBGainMatchingCalibrationFileName;
+  std::string * fNWAPulseHeightCalibrationFileName;
+  std::string * fNWBPulseHeightCalibrationFileName;
   std::string * fNWAGeometryFileName;
   std::string * fNWBGeometryFileName;
+  std::string * fNWAPSDFlatteningFileName;
+  std::string * fNWBPSDFlatteningFileName;
+  std::string * fNWAPSDCutsFileName;
+  std::string * fNWBPSDCutsFileName;
   std::string * fFATimeCalibrationFileName;
   std::string * fFAPulseHeightCorrectionFileName;
   std::string * fVWGainMatchingCalibrationFileName;

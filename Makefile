@@ -12,7 +12,7 @@ LibDir    := lib/
 
 OBJS := E15190Reader.$(ObjSuf) E15190ReaderData.$(ObjSuf) E15190ReaderCustomized.$(ObjSuf) shared.$(ObjSuf)
 OBJS += HTNeutronWallRootEvent.$(ObjSuf) HTForwardArrayRootEvent.$(ObjSuf) HTVetoWallRootEvent.$(ObjSuf)
-OBJS += NWPositionCalibration.$(ObjSuf) NWCosmicRayManager.$(ObjSuf) NWTimeCalibration.$(ObjSuf) NWPulseHeightCalibration.$(ObjSuf) NWGeometry.$(ObjSuf)
+OBJS += NWPositionCalibration.$(ObjSuf) NWCosmicRayManager.$(ObjSuf) NWTimeCalibration.$(ObjSuf) NWPulseHeightCalibration.$(ObjSuf) NWGeometry.$(ObjSuf) NWPulseShapeDiscrimination.$(ObjSuf)
 OBJS += FATimeCalibration.$(ObjSuf)
 OBJS += NWCalibratedRootEvent.$(ObjSuf)
 OBJS += HTMicroballRootEvent.$(ObjSuf) MBCalibratedRootEvent.$(ObjSuf)

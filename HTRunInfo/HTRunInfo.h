@@ -43,8 +43,14 @@ public:
   void SetNWBTimeOffsetCalibrationFile(const char * file_name) {fNWBTimeOffsetCalibrationFileName.assign(file_name);}
   void SetNWAGainMatchingCalibrationFile(const char * file_name) {fNWAGainMatchingCalibrationFileName.assign(file_name);}
   void SetNWBGainMatchingCalibrationFile(const char * file_name) {fNWBGainMatchingCalibrationFileName.assign(file_name);}
+  void SetNWAPulseHeightCalibrationFile(const char * file_name) {fNWAPulseHeightCalibrationFileName.assign(file_name);}
+  void SetNWBPulseHeightCalibrationFile(const char * file_name) {fNWBPulseHeightCalibrationFileName.assign(file_name);}
   void SetNWAGeometryCalibrationFile(const char * file_name) {fNWAGeometryFileName.assign(file_name);}
   void SetNWBGeometryCalibrationFile(const char * file_name) {fNWBGeometryFileName.assign(file_name);}
+  void SetNWAPSDFlatteningFile(const char * file_name) {fNWAPSDFlatteningFileName.assign(file_name);}
+  void SetNWBPSDFlatteningFile(const char * file_name) {fNWBPSDFlatteningFileName.assign(file_name);}
+  void SetNWAPSDCutsFile(const char * file_name) {fNWAPSDCutsFileName.assign(file_name);}
+  void SetNWBPSDCutsFile(const char * file_name) {fNWBPSDCutsFileName.assign(file_name);}
   void SetFATimeCalibrationFile(const char * file_name) {fFATimeCalibrationFileName.assign(file_name);}
   void SetFAPulseHeightCorrectionFile(const char * file_name) {fFAPulseHeightCorrectionFileName.assign(file_name);}
   void SetVWGainMatchingCalibrationFile(const char * file_name) {fVWGainMatchingCalibrationFileName.assign(file_name);}
@@ -71,8 +77,14 @@ public:
   const char * GetNWBTimeOffsetCalibrationFileName() const {return fNWBTimeOffsetCalibrationFileName.c_str();}
   const char * GetNWAGainMatchingCalibrationFileName() const {return fNWAGainMatchingCalibrationFileName.c_str();}
   const char * GetNWBGainMatchingCalibrationFileName() const {return fNWBGainMatchingCalibrationFileName.c_str();}
+  const char * GetNWAPulseHeightCalibrationFileName() const {return fNWAPulseHeightCalibrationFileName.c_str();}
+  const char * GetNWBPulseHeightCalibrationFileName() const {return fNWBPulseHeightCalibrationFileName.c_str();}
   const char * GetNWAGeometryCalibrationFileName() const {return fNWAGeometryFileName.c_str();}
   const char * GetNWBGeometryCalibrationFileName() const {return fNWBGeometryFileName.c_str();}
+  const char * GetNWAPSDFlatteningFileName() const {return fNWAPSDFlatteningFileName.c_str();}
+  const char * GetNWBPSDFlatteningFileName() const {return fNWBPSDFlatteningFileName.c_str();}
+  const char * GetNWAPSDCutsFileName() const {return fNWAPSDCutsFileName.c_str();}
+  const char * GetNWBPSDCutsFileName() const {return fNWBPSDCutsFileName.c_str();}
   const char * GetFATimeCalibrationFileName() const {return fFATimeCalibrationFileName.c_str();}
   const char * GetFAPulseHeightCorrectionFileName() const {return fFAPulseHeightCorrectionFileName.c_str();}
   const char * GetVWGainMatchingCalibrationFileName() const {return fVWGainMatchingCalibrationFileName.c_str();}
@@ -117,8 +129,14 @@ private:
   std::string  fNWBTimeOffsetCalibrationFileName;
   std::string  fNWAGainMatchingCalibrationFileName;
   std::string  fNWBGainMatchingCalibrationFileName;
+  std::string  fNWAPulseHeightCalibrationFileName;
+  std::string  fNWBPulseHeightCalibrationFileName;
   std::string  fNWAGeometryFileName;
   std::string  fNWBGeometryFileName;
+  std::string  fNWAPSDFlatteningFileName;
+  std::string  fNWBPSDFlatteningFileName;
+  std::string  fNWAPSDCutsFileName;
+  std::string  fNWBPSDCutsFileName;
   std::string  fFATimeCalibrationFileName;
   std::string  fFAPulseHeightCorrectionFileName;
   std::string  fVWGainMatchingCalibrationFileName;

@@ -26,8 +26,14 @@ HTExperimentInfo::~HTExperimentInfo()
   if(fNWBTimeOffsetCalibrationFileName) delete [] fNWBTimeOffsetCalibrationFileName;
   if(fNWAGainMatchingCalibrationFileName) delete [] fNWAGainMatchingCalibrationFileName;
   if(fNWBGainMatchingCalibrationFileName) delete [] fNWBGainMatchingCalibrationFileName;
+  if(fNWAPulseHeightCalibrationFileName) delete [] fNWAPulseHeightCalibrationFileName;
+  if(fNWBPulseHeightCalibrationFileName) delete [] fNWBPulseHeightCalibrationFileName;
   if(fNWAGeometryFileName) delete [] fNWAGeometryFileName;
   if(fNWBGeometryFileName) delete [] fNWBGeometryFileName;
+  if(fNWAPSDFlatteningFileName) delete [] fNWAPSDFlatteningFileName;
+  if(fNWBPSDFlatteningFileName) delete [] fNWBPSDFlatteningFileName;
+  if(fNWAPSDCutsFileName) delete [] fNWAPSDCutsFileName;
+  if(fNWBPSDCutsFileName) delete [] fNWBPSDCutsFileName;
   if(fFATimeCalibrationFileName) delete [] fFATimeCalibrationFileName;
   if(fFAPulseHeightCorrectionFileName) delete [] fFAPulseHeightCorrectionFileName;
   if(fVWGainMatchingCalibrationFileName) delete [] fVWGainMatchingCalibrationFileName;
@@ -82,8 +88,14 @@ int HTExperimentInfo::InitClass(const char *file_name)
   fNWBTimeOffsetCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fNWAGainMatchingCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fNWBGainMatchingCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWAPulseHeightCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWBPulseHeightCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fNWAGeometryFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fNWBGeometryFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWAPSDFlatteningFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWBPSDFlatteningFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWAPSDCutsFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
+  fNWBPSDCutsFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fFATimeCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fFAPulseHeightCorrectionFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
   fVWGainMatchingCalibrationFileName=(std::string*)new std::string[fLastRun-fFirstRun+1];
@@ -227,8 +239,14 @@ HTRunInfo * HTExperimentInfo::GetRunInfo(int run_num) const
   newRunInfo->SetNWBTimeOffsetCalibrationFile(	 fNWBTimeOffsetCalibrationFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetNWAGainMatchingCalibrationFile( fNWAGainMatchingCalibrationFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetNWBGainMatchingCalibrationFile( fNWBGainMatchingCalibrationFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWAPulseHeightCalibrationFile( fNWAPulseHeightCalibrationFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWBPulseHeightCalibrationFile( fNWBPulseHeightCalibrationFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetNWAGeometryCalibrationFile(	 fNWAGeometryFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetNWBGeometryCalibrationFile(	 fNWBGeometryFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWAPSDFlatteningFile(	 fNWAPSDFlatteningFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWBPSDFlatteningFile(	 fNWBPSDFlatteningFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWAPSDCutsFile(	 fNWAPSDCutsFileName[run_num-fFirstRun].c_str());
+  newRunInfo->SetNWBPSDCutsFile(	 fNWBPSDCutsFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetFATimeCalibrationFile( 	 fFATimeCalibrationFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetFAPulseHeightCorrectionFile(	 fFAPulseHeightCorrectionFileName[run_num-fFirstRun].c_str());
   newRunInfo->SetVWGainMatchingCalibrationFile(	 fVWGainMatchingCalibrationFileName[run_num-fFirstRun].c_str());
@@ -397,10 +415,22 @@ void HTExperimentInfo::ParseSetConfigLineRunInfo(const char *line_to_parse, int 
     fNWAGainMatchingCalibrationFileName[run_num-fFirstRun].assign(NewValue);
   } else if (ValueToSet.compare("NWB_GAIN_MATCHING_CALIBRATION")==0) {
     fNWBGainMatchingCalibrationFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWA_PULSEHEIGHT_CALIBRATION")==0) {
+    fNWAPulseHeightCalibrationFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWB_PULSEHEIGHT_CALIBRATION")==0) {
+    fNWBPulseHeightCalibrationFileName[run_num-fFirstRun].assign(NewValue);
   } else if (ValueToSet.compare("NWA_GEOMETRY")==0) {
     fNWAGeometryFileName[run_num-fFirstRun].assign(NewValue);
   } else if (ValueToSet.compare("NWB_GEOMETRY")==0) {
     fNWBGeometryFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWA_PSD_FLATTENING")==0) {
+    fNWAPSDFlatteningFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWB_PSD_FLATTENING")==0) {
+    fNWBPSDFlatteningFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWA_ISGAMMA_CUTS")==0) {
+    fNWAPSDCutsFileName[run_num-fFirstRun].assign(NewValue);
+  } else if (ValueToSet.compare("NWB_ISGAMMA_CUTS")==0) {
+    fNWBPSDCutsFileName[run_num-fFirstRun].assign(NewValue);
   } else if (ValueToSet.compare("FA_TIME_CALIBRATION")==0) {
     fFATimeCalibrationFileName[run_num-fFirstRun].assign(NewValue);
   } else if (ValueToSet.compare("FA_PULSE_HEIGHT_CORRECTION")==0) {
