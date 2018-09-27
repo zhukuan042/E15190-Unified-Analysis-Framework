@@ -83,6 +83,6 @@ double NWPulseShapeDiscrimination::GetPSDFlattened(double ch, double ch_fast, in
 bool NWPulseShapeDiscrimination::IsGamma(double ch, double ch_fast, int numbar) const
 {
 	if(!fCutsLoaded || !fPSDFlatteningLoaded) return true; //we are interested in not-gamma
-	if(fFiducialCuts[numbar]!=0 && !(fFiducialCuts[numbar]->IsInside(ch,GetPSDFlattened(ch,ch_fast,numbar)))) return false;
+	if(fFiducialCuts[numbar]!=0 && !((fFiducialCuts[numbar]->IsInside(ch,GetPSDFlattened(ch,ch_fast,numbar))))) return false;
 	else return true;
 }
