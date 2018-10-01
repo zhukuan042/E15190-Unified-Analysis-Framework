@@ -662,15 +662,15 @@ double E15190Reader::GetNWBPSDFlattened(double ch, double ch_fast, int num_bar) 
 }
 
 //KZ____________________________________________________
-bool E15190Reader::IsNWAGamma(double ch, double ch_fast, int num_bar) const
+bool E15190Reader::IsNWAGamma(double ch, double ch_fast, int num_bar , double ch_left , double ch_right) const
 {
-  return fNWAPSDFlattened&&fNWAPSDCutsLoaded ? fNWAPulseShapeDiscriminationTools->IsGamma(ch, ch_fast, num_bar) : true;
+  return fNWAPSDFlattened&&fNWAPSDCutsLoaded ? fNWAPulseShapeDiscriminationTools->IsGamma(ch, ch_fast, num_bar , ch_left , ch_right) : true;
 }
 
 //KZ____________________________________________________
-bool E15190Reader::IsNWBGamma(double ch, double ch_fast, int num_bar) const
+bool E15190Reader::IsNWBGamma(double ch, double ch_fast, int num_bar , double ch_left , double ch_right) const
 {
-  return fNWBPSDFlattened&&fNWBPSDCutsLoaded ? fNWBPulseShapeDiscriminationTools->IsGamma(ch, ch_fast, num_bar) : true;
+  return fNWBPSDFlattened&&fNWBPSDCutsLoaded ? fNWBPulseShapeDiscriminationTools->IsGamma(ch, ch_fast, num_bar, ch_left , ch_right) : true;
 }
 
 //____________________________________________________

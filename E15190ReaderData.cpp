@@ -32,7 +32,7 @@ void E15190Reader::BuildCalibratedEvent()
         fNWACalibratedData.fPhiRan[fNWACalibratedData.fmulti]      =GetNWAPhiRan(NWA->fnumbar[i],fNWACalibratedData.fXcm[fNWACalibratedData.fmulti]);
         fNWACalibratedData.fDistcm[fNWACalibratedData.fmulti]      =GetNWADistance(NWA->fnumbar[i],fNWACalibratedData.fXcm[fNWACalibratedData.fmulti]);
         fNWACalibratedData.fDistRancm[fNWACalibratedData.fmulti]   =GetNWADistanceRan(NWA->fnumbar[i],fNWACalibratedData.fXcm[fNWACalibratedData.fmulti]);
-        fNWACalibratedData.fIsGamma[fNWACalibratedData.fmulti]     =IsNWAGamma(NWA->fGeoMean[i],NWA->ffastGeoMean[i],NWA->fnumbar[i]);
+        fNWACalibratedData.fIsGamma[fNWACalibratedData.fmulti]     =IsNWAGamma(NWA->fGeoMean[i],NWA->ffastGeoMean[i],NWA->fnumbar[i],NWA->fLeft[i],NWA->fRight[i]);
         fNWACalibratedData.fmulti++;
       }
     }
@@ -66,7 +66,7 @@ void E15190Reader::BuildCalibratedEvent()
         fNWBCalibratedData.fPhiRan[fNWBCalibratedData.fmulti]      =GetNWBPhiRan(NWB->fnumbar[i],fNWBCalibratedData.fXcm[fNWBCalibratedData.fmulti]);
         fNWBCalibratedData.fDistcm[fNWBCalibratedData.fmulti]      =GetNWBDistance(NWB->fnumbar[i],fNWBCalibratedData.fXcm[fNWBCalibratedData.fmulti]);
         fNWBCalibratedData.fDistRancm[fNWBCalibratedData.fmulti]   =GetNWBDistanceRan(NWB->fnumbar[i],fNWBCalibratedData.fXcm[fNWBCalibratedData.fmulti]);
-        fNWBCalibratedData.fIsGamma[fNWBCalibratedData.fmulti]     =IsNWBGamma(NWB->fGeoMean[i],NWB->ffastGeoMean[i],NWB->fnumbar[i]);
+        fNWBCalibratedData.fIsGamma[fNWBCalibratedData.fmulti]     =IsNWBGamma(NWB->fGeoMean[i],NWB->ffastGeoMean[i],NWB->fnumbar[i],NWB->fLeft[i],NWB->fRight[i]);
         fNWBCalibratedData.fmulti++;
       }
     }

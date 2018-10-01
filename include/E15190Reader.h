@@ -134,8 +134,8 @@ public :
   double GetNWBPulseHeightCalibrated(double ch, double Xcm, int num_bar) const;
   double GetNWAPSDFlattened(double ch, double ch_fast, int num_bar) const;
   double GetNWBPSDFlattened(double ch, double ch_fast, int num_bar) const;
-  bool   IsNWAGamma(double ch, double ch_fast, int numbar) const;
-  bool   IsNWBGamma(double ch, double ch_fast, int numbar) const;
+  bool   IsNWAGamma(double ch, double ch_fast, int numbar , double ch_left , double ch_right) const;
+  bool   IsNWBGamma(double ch, double ch_fast, int numbar , double ch_left , double ch_right) const;
   double GetFATimeOffset(int num_det) const;
   double GetFATimePulseHeightCorrection(int num_det, double pulse_height) const;
   double GetVWGeoMeanMatched(double ch, int num_bar) const;

@@ -18,7 +18,7 @@ public :
 	int LoadIsGammaCuts(const char *);
 
 	double GetPSDFlattened(double ch, double ch_fast, int numbar) const;
-	bool IsGamma(double ch, double ch_fast, int numbar) const;
+	bool IsGamma(double ch, double ch_fast, int numbar , double ch_left , double ch_right) const;
 
 private :
 	int fNumBars;

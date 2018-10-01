@@ -80,9 +80,9 @@ double NWPulseShapeDiscrimination::GetPSDFlattened(double ch, double ch_fast, in
 	return fPSDFlatteningLoaded ? ch_fast-ch*fPSDFlatteningFactor[numbar] : -9999;
 }
 
-bool NWPulseShapeDiscrimination::IsGamma(double ch, double ch_fast, int numbar) const
+bool NWPulseShapeDiscrimination::IsGamma(double ch, double ch_fast, int numbar , double ch_left , double ch_right) const
 {
 	if(!fCutsLoaded || !fPSDFlatteningLoaded) return true; //we are interested in not-gamma
-	if(fFiducialCuts[numbar]!=0 && !((fFiducialCuts[numbar]->IsInside(ch,GetPSDFlattened(ch,ch_fast,numbar))))) return false;
+	if((fFiducialCuts[numbar]!=0 && !(fFiducialCuts[numbar]->IsInside(ch,GetPSDFlattened(ch,ch_fast,numbar)))) || (ch_left>4090) || (ch_right>4090)) return false; // assume gamma won't have such high energy to make channel saturated
 	else return true;
 }
